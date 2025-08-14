@@ -3,6 +3,7 @@
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
+@import 'antd/dist/reset.css'
 
 @custom-variant dark (&:is(.dark *));
 

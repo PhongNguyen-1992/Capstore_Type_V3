@@ -1,64 +1,131 @@
 import React, { useState } from "react";
-import LogoBrand from "./Logo/LogoBrand";
+import LogoBrand from "./LogoBrand";
 import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-
 
 export default function Headder() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-white border border-gray-200 dark:bg-gray-900 rounded-xl shadow-xl">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4">
-        
-        {/* Logo - ẩn khi mobile */}
-        <div className="hidden md:block">
-          <LogoBrand />
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200"
-        >
-       <FontAwesomeIcon icon={faBars}  />
-    
-        </button>
-
-        {/* Menu */}
-        <div
-          className={`${isOpen ? "block" : "hidden"} w-full md:block md:w-auto transition-all duration-300`}
-        >
-          <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 
-          md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            
+    <nav className="bg-gradient-to-r from-black via-gray-900 to-black shadow-lg rounded-xl border border-gray-800">
+      <div className="max-w-screen-xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16">          
+          <h1 className="text-white font-bold text-2xl md:text-3xl tracking-widest">
+            PANDA
+          </h1>
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="inline-flex items-center justify-center w-10 h-10 text-gray-400 rounded-lg md:hidden hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <FontAwesomeIcon icon={faBars} size="lg" />
+          </button>
+          <ul className="hidden md:flex items-center gap-8 font-medium">
             <li>
               <NavLink
-                to="/Home/Trang-Chu"
-                className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 dark:text-white md:dark:text-blue-500"
+                to="Trang-Chu"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-blue-400 font-semibold transition-colors"
+                    : "text-white hover:text-blue-400 transition-colors"
+                }
               >
                 Trang Chủ
               </NavLink>
             </li>
             <li>
               <NavLink
-                to="/Home/Movie"
-                className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:text-blue-700 dark:text-white md:dark:hover:text-blue-500"
+                to="Movie"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-blue-400 font-semibold transition-colors"
+                    : "text-white hover:text-blue-400 transition-colors"
+                }
               >
                 Movie
               </NavLink>
             </li>
             <li>
-              <a href="#" className="block py-2 px-3 hover:text-blue-700">Services</a>
+              <NavLink
+              to=""
+                className="text-white hover:text-blue-400 transition-colors"
+              >
+                Đăng Nhập
+              </NavLink>
             </li>
             <li>
-              <a href="#" className="block py-2 px-3 hover:text-blue-700">Pricing</a>
+              <a
+                href="#"
+                className="text-white hover:text-blue-400 transition-colors"
+              >
+                Pricing
+              </a>
             </li>
             <li>
-              <a href="#" className="block py-2 px-3 hover:text-blue-700">Contact</a>
+              <a
+                href="#"
+                className="text-white hover:text-blue-400 transition-colors"
+              >
+                Contact
+              </a>
             </li>
           </ul>
         </div>
+        {isOpen && (
+          <div className="md:hidden">
+            <ul className="flex flex-col items-start gap-4 py-4 font-medium">
+              <li>
+                <NavLink
+                  to="/Home/Trang-Chu"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-400 font-semibold transition-colors"
+                      : "text-white hover:text-blue-400 transition-colors"
+                  }
+                >
+                  Trang Chủ
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/Home/Movie"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-400 font-semibold transition-colors"
+                      : "text-white hover:text-blue-400 transition-colors"
+                  }
+                >
+                  Movie
+                </NavLink>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-white hover:text-blue-400 transition-colors"
+                >
+                  Services
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-white hover:text-blue-400 transition-colors"
+                >
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-white hover:text-blue-400 transition-colors"
+                >
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </nav>
   );

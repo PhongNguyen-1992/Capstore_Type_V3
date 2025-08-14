@@ -4,7 +4,7 @@ import { getListBanner } from "../../../service/movie.api";
 
 export default function Banner() {
   const {
-    data = [],
+    data = [],isPending,
     error,
     isLoading,
     isError,

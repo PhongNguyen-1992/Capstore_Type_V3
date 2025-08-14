@@ -1,8 +1,7 @@
 import type { AxiosResponse } from "axios";
 import api from "./api";
-import type { Banner } from "../interfaces/movie.interface";
+import type { Banner, Movie } from "../interfaces/movie.interface";
 import type { BaseAPIResponse } from "../interfaces/base.interface";
-
 
 
 export const getListBanner = async (): Promise <Banner[] | undefined> => {
@@ -16,3 +15,15 @@ export const getListBanner = async (): Promise <Banner[] | undefined> => {
   }
 };
 
+export const getListMovie = async ()=> {
+  try {
+    const response = await api.get<BaseAPIResponse<Movie[]>>("/QuanLyPhim/LayDanhSachPhim?maNhom=GP01");
+    return response.data.content
+  }
+  catch (error){{
+    console.log("Loi:",error)
+    throw(error);
+    
+  }}
+
+}
