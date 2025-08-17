@@ -25,7 +25,7 @@ const schema = z.object({
 type LoginFormInputs = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const { user, setUser } = userAuthStore();
+  const {setUser } = userAuthStore();
   const navigate = useNavigate();
 
   const { mutate: handleLogin, isPending } = useMutation({
@@ -35,7 +35,7 @@ export default function LoginPage() {
       message.success("Đăng nhập thành công!");
       navigate("/");
     },
-    onError: (error: any) => {
+    onError: () => {
       message.error("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.");
     },
   });

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Button, Drawer, Avatar, Input } from "antd";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -8,56 +7,23 @@ import {
   Film,
   User,
   LogIn,
-  Search, 
-  Settings,
+  Search,  
   LogOut,
 } from "lucide-react";
 import { userAuthStore } from "../../../store";
+import { useState } from "react";
 
 export default function Header() {
-  const { user, setUser, clearUser } = userAuthStore((state: any) => state);
+  const { user, clearUser } = userAuthStore((state: any) => state);
   const handleLogout = () => {
     clearUser();
-  }
+  };
 
   const navigate = useNavigate();
-  const handleLogin =()=>{
-    navigate("auth/login")
-  }
+  const handleLogin = () => {
+    navigate("auth/login");
+  };
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const userMenuItems = [
-    {
-      key: "profile",
-      label: (
-        <div className="flex items-center gap-2 py-1">
-          <User className="h-4 w-4" />
-          <span>Hồ sơ</span>
-        </div>
-      ),
-    },
-    {
-      key: "settings",
-      label: (
-        <div className="flex items-center gap-2 py-1">
-          <Settings className="h-4 w-4" />
-          <span>Cài đặt</span>
-        </div>
-      ),
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "logout",
-      label: (
-        <div className="flex items-center gap-2 py-1 text-red-600">
-          <LogOut className="h-4 w-4" />
-          <span>Đăng xuất</span>
-        </div>
-      ),
-    },
-  ];
 
   const navigationItems = [
     { to: "/", label: "Trang Chủ", icon: Home },
@@ -114,17 +80,17 @@ export default function Header() {
             {/* Right Section */}
             <div className="flex items-center gap-3">
               {/* Search */}
-              <Input 
-                placeholder="Nhập Tên Phim..." 
-                className="hidden md:block w-64"
-                prefix={<Search className="h-4 w-4 text-gray-400" />}
-              />
-
+              <div className="hidden md:block w-64">
+                <Input
+                  placeholder="Nhập Tên Phim..."
+                  prefix={<Search className="h-4 w-4 text-gray-400" />}
+                />
+              </div>
               {user ? (
                 <>
                   {/* User Section - Desktop */}
                   <div className="flex items-center gap-3">
-                    <Avatar 
+                    <Avatar
                       size="large"
                       src={user.avatar}
                       icon={<User className="h-4 w-4" />}
@@ -133,8 +99,8 @@ export default function Header() {
                     <div className="hidden lg:block">
                       <h1 className="text-md font-semibold text-gray-800 m-0">
                         {user.hoTen}
-                      </h1>                      
-                    </div>                    
+                      </h1>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -190,7 +156,7 @@ export default function Header() {
                 icon={<User className="h-5 w-5" />}
               />
               <div>
-                <div className="font-semibold text-gray-900">{user.hoTen}</div>               
+                <div className="font-semibold text-gray-900">{user.hoTen}</div>
               </div>
             </div>
           ) : (
@@ -212,8 +178,8 @@ export default function Header() {
 
           {/* Search Mobile */}
           <div className="md:hidden">
-            <Input 
-              placeholder="Tìm kiếm phim..." 
+            <Input
+              placeholder="Tìm kiếm phim..."
               prefix={<Search className="h-4 w-4 text-gray-400" />}
               className="w-full"
             />
@@ -247,8 +213,7 @@ export default function Header() {
           {user && (
             <>
               <div className="border-t border-gray-200 my-4"></div>
-              <div className="space-y-2">               
-
+              <div className="space-y-2">
                 <Button
                   type="text"
                   icon={<LogOut className="h-4 w-4" />}
