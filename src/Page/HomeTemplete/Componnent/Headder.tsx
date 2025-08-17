@@ -114,7 +114,7 @@ export default function Header() {
                 </Button>
               )}
 
-              {/* Mobile Menu Button - Only visible on small screens */}
+              {/* Mobile Menu Button */}
               <Button
                 type="text"
                 icon={<Menu className="h-5 w-5" />}

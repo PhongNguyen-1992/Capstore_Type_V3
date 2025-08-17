@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getListMovie } from "../../../service/movie.api";
 import type { Movie } from "../../../interfaces/movie.interface";
 import MovieCard from "./movie";
+import { Flex, Spin } from "antd";
 
 export default function MovieList() {
   const {
@@ -13,7 +14,13 @@ export default function MovieList() {
     queryFn: getListMovie,
   });
 
-  if (isLoading) return <p>Đang tải...</p>;
+  if (isLoading)
+    return (
+      <Flex align="center" justify="center" style={{height:"100vh"}} gap="middle">
+        {" "}
+        <Spin size="large" />
+      </Flex>
+    );
   if (isError) return <p>Có lỗi xảy ra!</p>;
 
   return (
