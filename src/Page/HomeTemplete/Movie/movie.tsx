@@ -1,6 +1,5 @@
-import React from "react";
 import { Button, Card, Space } from "antd";
-import { Eye, Ticket, Star, Calendar, Play } from "lucide-react";
+import { Eye, Ticket, Star, Calendar} from "lucide-react";
 import type { Movie } from "../../../interfaces/movie.interface";
 import { useNavigate } from "react-router-dom";
 

@@ -1,4 +1,3 @@
-import type { AxiosResponse } from "axios";
 import api from "./api";
 import type { Banner, DetailMovie, Movie } from "../interfaces/movie.interface";
 import type { BaseAPIResponse } from "../interfaces/base.interface";

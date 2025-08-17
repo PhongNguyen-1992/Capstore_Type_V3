@@ -1,7 +1,4 @@
-import React from "react";
-import Banner from "./Componnent/Banner";
 import Headder from "./Componnent/Headder";
-import { Outlet } from "react-router-dom";
 import { Example } from "./Componnent/Carousel";
 import MovieList from "./Movie/listmovie";
 

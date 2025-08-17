@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Drawer, Badge, Avatar, Dropdown, Input } from "antd";
+import { Button, Drawer, Avatar, Input } from "antd";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Menu,
@@ -8,8 +8,7 @@ import {
   Film,
   User,
   LogIn,
-  Search,
-  Bell,
+  Search, 
   Settings,
   LogOut,
 } from "lucide-react";

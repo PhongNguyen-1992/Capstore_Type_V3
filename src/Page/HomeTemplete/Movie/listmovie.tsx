@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 import { getListMovie } from "../../../service/movie.api";
 import type { Movie } from "../../../interfaces/movie.interface";
 import MovieCard from "./movie";

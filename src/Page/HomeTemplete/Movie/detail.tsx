@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Film, Clock, AlertCircle, Play, Ticket, Star, Heart, House } from "lucide-react";
+import { Calendar, Film, Clock, AlertCircle, Play, Ticket, Star, House } from "lucide-react";
 import { getMovieDetailsAPI } from "../../../service/movie.api";
 
 export default function MovieDetail() {

@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { userAuthStore } from "../../store";
 export default function AuthTemplte() {

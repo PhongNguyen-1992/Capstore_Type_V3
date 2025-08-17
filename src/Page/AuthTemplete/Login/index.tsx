@@ -1,21 +1,16 @@
-import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Card, Alert, Divider, message } from "antd";
-import { 
-  User, 
+import { Card, message } from "antd";
+import {
+  User,
   Lock, 
-  Eye, 
-  EyeOff, 
-  Film, 
-  ArrowRight,
-  Github,
-  Chrome,
+  Film,
+  ArrowRight, 
   AlertCircle,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { loginAPI } from "../../../service/auth.api";
 import { userAuthStore } from "../../../store";
@@ -37,11 +32,11 @@ export default function LoginPage() {
     mutationFn: (data: LoginFormInputs) => loginAPI(data),
     onSuccess: (currentUser) => {
       setUser(currentUser);
-      message.success('Đăng nhập thành công!');
-      navigate('/');
+      message.success("Đăng nhập thành công!");
+      navigate("/");
     },
     onError: (error: any) => {
-      message.error('Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.');
+      message.error("Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.");
     },
   });
 
@@ -58,14 +53,12 @@ export default function LoginPage() {
   });
 
   const onSubmit = (data: LoginFormInputs) => {
-    handleLogin(data);  };
-
-
+    handleLogin(data);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg transform hover:scale-105 transition-transform duration-300">
@@ -83,7 +76,6 @@ export default function LoginPage() {
         <Card className="shadow-2xl border-0 rounded-2xl overflow-hidden">
           <div className="p-8">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              
               {/* Username Field */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -97,9 +89,9 @@ export default function LoginPage() {
                     placeholder="Nhập tài khoản"
                     {...register("taiKhoan")}
                     className={`pl-10 h-12 rounded-xl border-2 transition-all duration-300 ${
-                      errors.taiKhoan 
-                        ? 'border-red-300 focus:border-red-500' 
-                        : 'border-gray-200 hover:border-blue-300 focus:border-blue-500'
+                      errors.taiKhoan
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-gray-200 hover:border-blue-300 focus:border-blue-500"
                     }`}
                   />
                 </div>
@@ -124,9 +116,9 @@ export default function LoginPage() {
                     placeholder="Nhập mật khẩu"
                     {...register("matKhau")}
                     className={`pl-10 h-12 rounded-xl border-2 transition-all duration-300 ${
-                      errors.matKhau 
-                        ? 'border-red-300 focus:border-red-500' 
-                        : 'border-gray-200 hover:border-blue-300 focus:border-blue-500'
+                      errors.matKhau
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-gray-200 hover:border-blue-300 focus:border-blue-500"
                     }`}
                   />
                 </div>
@@ -140,8 +132,8 @@ export default function LoginPage() {
 
               {/* Forgot Password */}
               <div className="text-right">
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
                 >
                   Quên mật khẩu?
@@ -166,15 +158,14 @@ export default function LoginPage() {
                   </>
                 )}
               </Button>
-            </form>         
-
+            </form>
 
             {/* Register Link */}
             <div className="text-center mt-8 pt-6 border-t border-gray-100">
               <p className="text-gray-600">
-                Chưa có tài khoản?{' '}
-                <a 
-                  href="/register" 
+                Chưa có tài khoản?{" "}
+                <a
+                  href="/register"
                   className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
                 >
                   Đăng ký ngay
@@ -183,7 +174,6 @@ export default function LoginPage() {
             </div>
           </div>
         </Card>
-    
       </div>
     </div>
   );
