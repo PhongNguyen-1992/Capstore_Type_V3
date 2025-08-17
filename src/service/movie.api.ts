@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
 import api from "./api";
-import type { Banner, Movie } from "../interfaces/movie.interface";
+import type { Banner, DetailMovie, Movie } from "../interfaces/movie.interface";
 import type { BaseAPIResponse } from "../interfaces/base.interface";
 
 
@@ -27,3 +27,15 @@ export const getListMovie = async ()=> {
   }}
 
 }
+
+export const getMovieDetailsAPI = async (movieID:any) => {
+
+    try {
+        const response = await api.get<BaseAPIResponse<DetailMovie>>(
+            `/QuanLyPhim/LayThongTinPhim?MaPhim=${movieID}`
+        );
+        return response.data.content
+    } catch (error) {
+    }
+};
+console.log(getMovieDetailsAPI);

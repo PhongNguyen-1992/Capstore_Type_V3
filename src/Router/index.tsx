@@ -7,11 +7,11 @@ import React, {
 } from "react";
 import { Route, type RouteObject } from "react-router-dom";
 const Homepage = lazy(() => import("../Page/HomeTemplete/index"));
-const Login = lazy(() => import("../Page/AuthTemplete/Login/index"));
+const Login = lazy(() => import("../Page/AuthTemplete/Login"));
 const Movie = lazy(() => import("../Page/HomeTemplete/Movie/listmovie"));
 const TrangChu = lazy(() => import("../Page/HomeTemplete/TrangChu"));
 const Auth = lazy(() => import("../Page/AuthTemplete"));
-const Adminpage = lazy(() => import("../Page/AdminTemplate"));
+const MovieDetail = lazy(() => import("../Page/HomeTemplete/Movie/detail"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>) => {
   return (
@@ -23,19 +23,16 @@ const withSuspense = (Component: LazyExoticComponent<FC>) => {
 export const router: RouteObject[] = [
   {
     path: "/",
-    element: withSuspense(Homepage),
-    children: [
-      { path: "Trang-Chu", element: withSuspense(TrangChu) },
-      { path: "Movie", element: withSuspense(Movie) },
-    ],
+    element: withSuspense(Homepage),  
+    
+  },
+  {
+    path: "movie-detail/:movieID",
+    element: withSuspense(MovieDetail),
   },
   {
     path: "/auth",
     element: withSuspense(Auth),
     children: [{ path: "login", element: withSuspense(Login) }],
-  },
-  {
-    path: "/admin",
-    element: withSuspense(Adminpage),
   },
 ];
