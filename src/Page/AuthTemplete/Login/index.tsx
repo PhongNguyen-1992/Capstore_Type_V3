@@ -30,7 +30,7 @@ const schema = z.object({
 type LoginFormInputs = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const { user, setUser, clearUser } = userAuthStore();
+  const { user, setUser } = userAuthStore();
   const navigate = useNavigate();
 
   const { mutate: handleLogin, isPending } = useMutation({

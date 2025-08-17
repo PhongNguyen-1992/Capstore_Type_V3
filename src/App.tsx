@@ -6,9 +6,9 @@ function App() {
   const routerElement = useRoutes(router);
 
   return (
-    <>
-    {routerElement}
-    </>
+    <div>
+      {routerElement}
+    </div>
   )
 }
 
