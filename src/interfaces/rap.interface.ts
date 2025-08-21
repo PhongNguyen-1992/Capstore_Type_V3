@@ -55,3 +55,10 @@ export interface MovieShowtime {
   moTa: string;
   heThongRapChieu: any[]; 
 }
+export interface LstLichChieuTheoPhim {
+    maLichChieu:       number;
+    maRap:             string;
+    tenRap:            string;
+    ngayChieuGioChieu: Date;
+    giaVe:             number;
+}
