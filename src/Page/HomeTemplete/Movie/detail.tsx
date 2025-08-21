@@ -10,6 +10,12 @@ export default function MovieDetail() {
   const handleTrangChu = ()=>{
     navigate('/')
   }
+  const handleBooking = () => {
+  if (data?.maPhim) {
+    navigate(`/TicketBooking/${data.maPhim}`);
+  }
+};
+
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["movie-detail", movieID],
@@ -125,10 +131,7 @@ export default function MovieDetail() {
                     {/* Action Buttons */}
                     <div className="flex gap-3 lg:flex-col xl:flex-row">
                       <button 
-                        onClick={() => {
-                          // Handle booking logic here
-                          console.log('Đặt vé phim:', data?.tenPhim);
-                        }}
+                        onClick={handleBooking}
                         className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <Ticket className="h-5 w-5" />

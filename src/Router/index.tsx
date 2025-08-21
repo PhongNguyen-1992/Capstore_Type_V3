@@ -14,6 +14,7 @@ const Homepage = lazy(() => import("../Page/HomeTemplete/index"));
 const Login = lazy(() => import("../Page/AuthTemplete/Login"));
 const Auth = lazy(() => import("../Page/AuthTemplete"));
 const MovieDetail = lazy(() => import("../Page/HomeTemplete/Movie/detail"));
+const TicketBooking = lazy(() => import("../Page/HomeTemplete/TicketBooking"));
 
 // HOC để wrap Suspense
 const withSuspense = (Component: LazyExoticComponent<FC>) => {
@@ -57,6 +58,10 @@ export const router: RouteObject[] = [
     path: "movie-detail/:movieID",
     element: withSuspense(MovieDetail),
   },
+ {
+  path: "TicketBooking/:movieID",
+  element: withSuspense(TicketBooking),
+},
   {
     path: "/auth",
     element: withSuspense(Auth),

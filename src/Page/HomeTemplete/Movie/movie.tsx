@@ -16,12 +16,13 @@ export default function MovieCard({ movie }: MovieProps) {
 
   const handleBooking = () => {
     // Handle booking logic here
-    console.log("Đặt vé phim:", movie.tenPhim);
+    navigate(`/TicketBooking/${movie.maPhim}`)
   };
 
   return (
     <div className="group relative">
       <Card
+     
         hoverable
         className="w-64 h-96 overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 bg-gradient-to-b from-white to-gray-50"
         bodyStyle={{ padding: 0 }}
