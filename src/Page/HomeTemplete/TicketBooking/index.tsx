@@ -17,7 +17,7 @@ import {
   Badge,
 } from "antd";
 import {
-  PlayCircleOutlined, 
+  PlayCircleOutlined,
   EnvironmentOutlined,
   CheckCircleOutlined,
   LoadingOutlined,
@@ -29,6 +29,7 @@ import type { Movie } from "@/interfaces/movie.interface";
 import type { Cinema, CumRap, Rap } from "@/interfaces/rap.interface";
 import { getListMovie } from "@/service/movie.api";
 import { diaChiRap, getListCumRap } from "@/service/rap.api";
+import MovieBookingHeader from "./hearder";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -42,8 +43,7 @@ export default function TicketBooking() {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [selectedCinema, setSelectedCinema] = useState<string>("");
   const [selectedShowtime, setSelectedShowtime] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(true);  
   // Lấy dữ liệu phim & danh sách rạp
   useEffect(() => {
     const fetchMovie = async () => {
@@ -83,7 +83,7 @@ export default function TicketBooking() {
   const handleSelectCinema = async (cinema: Cinema) => {
     setSelectedCinema(cinema.tenHeThongRap);
     setSelectedAddress(""); // Reset address when changing cinema
-    
+
     try {
       const data = await diaChiRap(cinema.maHeThongRap);
       const addressesArray = Array.isArray(data) ? data : [data];
@@ -108,7 +108,12 @@ export default function TicketBooking() {
 
   // Đặt vé
   const handleBookTicket = () => {
-    if (!selectedCinema || !selectedAddress || !selectedShowtime || selectedSeats.length === 0) {
+    if (
+      !selectedCinema ||
+      !selectedAddress ||
+      !selectedShowtime ||
+      selectedSeats.length === 0
+    ) {
       notification.warning({
         message: "Thông tin chưa đầy đủ",
         description: "Vui lòng chọn đủ rạp, địa chỉ, suất chiếu và ghế ngồi",
@@ -164,7 +169,7 @@ export default function TicketBooking() {
             </div>
           </div>
         ))}
-        
+
         {/* Seat legend */}
         <div className="flex justify-center gap-8 mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl">
           <div className="flex items-center gap-2">
@@ -190,9 +195,16 @@ export default function TicketBooking() {
         <div className="text-center space-y-4">
           <Spin
             size="large"
-            indicator={<LoadingOutlined style={{ fontSize: 48, color: '#3B82F6' }} spin />}
+            indicator={
+              <LoadingOutlined
+                style={{ fontSize: 48, color: "#3B82F6" }}
+                spin
+              />
+            }
           />
-          <Text className="text-xl font-medium text-gray-700">Đang tải thông tin phim...</Text>
+          <Text className="text-xl font-medium text-gray-700">
+            Đang tải thông tin phim...
+          </Text>
           <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full mx-auto animate-pulse"></div>
         </div>
       </div>
@@ -216,32 +228,9 @@ export default function TicketBooking() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-8">
       <div className="max-w-7xl mx-auto px-4">
-           <div className="flex justify-between items-center mb-12">
-      {/* Bên trái: Tiêu đề + mô tả */}
-      <div>
-        <Title
-          level={1}
-          className="!text-transparent !bg-clip-text !bg-gradient-to-r !from-blue-600 !to-purple-600 !mb-2 flex items-center"
-        >
-          <PlayCircleOutlined className="mr-3" />
-          Đặt Vé Xem Phim
-        </Title>
-        <Text className="text-lg text-gray-600">
-          Trải nghiệm điện ảnh tuyệt vời đang chờ đón bạn
-        </Text>
-      </div>
-
-      {/* Bên phải: Nút Trang Chủ */}
-      <div>
-        <Button
-          type="primary"
-          icon={<HomeOutlined />}
-          onClick={() => navigate("/")}
-        >
-          Trang Chủ
-        </Button>
-      </div>
-    </div>
+        <div className="mb-6">
+          <MovieBookingHeader />
+        </div>
 
         <Row gutter={[32, 32]}>
           {/* Chọn ghế */}
@@ -254,12 +243,17 @@ export default function TicketBooking() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <CheckCircleOutlined className="mr-3 text-2xl" />
-                    <Title level={3} className="!text-white !mb-0">Chọn ghế ngồi</Title>
+                    <Title level={3} className="!text-white !mb-0">
+                      Chọn ghế ngồi
+                    </Title>
                   </div>
-                  <Badge count={selectedSeats.length} className="bg-white text-blue-600" />
+                  <Badge
+                    count={selectedSeats.length}
+                    className="bg-white text-blue-600"
+                  />
                 </div>
               </div>
-              
+
               <div className="p-8">
                 {/* Screen */}
                 <div className="relative mb-12">
@@ -269,7 +263,7 @@ export default function TicketBooking() {
                     MÀN HÌNH
                   </Text>
                 </div>
-                
+
                 {/* Seats */}
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-3xl shadow-inner">
                   {renderSeats()}
@@ -309,7 +303,7 @@ export default function TicketBooking() {
                     </div>
                   </div>
                   <Paragraph
-                    ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}
+                    ellipsis={{ rows: 3, expandable: true, symbol: "Xem thêm" }}
                     className="text-gray-600 text-sm leading-relaxed"
                   >
                     {movieData.moTa}
@@ -320,7 +314,10 @@ export default function TicketBooking() {
 
                 {/* Cinema Selection */}
                 <div className="mb-8">
-                  <Text strong className="flex items-center mb-4 text-gray-800 text-lg">
+                  <Text
+                    strong
+                    className="flex items-center mb-4 text-gray-800 text-lg"
+                  >
                     <HomeOutlined className="mr-2 text-orange-500" />
                     Chọn rạp chiếu
                   </Text>
@@ -337,7 +334,11 @@ export default function TicketBooking() {
                               : "!border-gray-200"
                           }`}
                         >
-                          <Space direction="vertical" align="center" className="w-full">
+                          <Space
+                            direction="vertical"
+                            align="center"
+                            className="w-full"
+                          >
                             <Image
                               src={cinema.logo}
                               alt={cinema.tenHeThongRap}
@@ -348,10 +349,15 @@ export default function TicketBooking() {
                             />
                             <Text
                               className={`text-center font-medium ${
-                                selectedCinema === cinema.tenHeThongRap ? "text-blue-600" : "text-gray-700"
+                                selectedCinema === cinema.tenHeThongRap
+                                  ? "text-blue-600"
+                                  : "text-gray-700"
                               }`}
                               style={{
-                                textTransform: cinema.tenHeThongRap === "cgv" ? "uppercase" : "none",
+                                textTransform:
+                                  cinema.tenHeThongRap === "cgv"
+                                    ? "uppercase"
+                                    : "none",
                               }}
                             >
                               {cinema.tenHeThongRap}
@@ -365,7 +371,10 @@ export default function TicketBooking() {
 
                 {/* Address Selection*/}
                 <div className="mb-8">
-                  <Text strong className="flex items-center mb-4 text-gray-800 text-lg">
+                  <Text
+                    strong
+                    className="flex items-center mb-4 text-gray-800 text-lg"
+                  >
                     <EnvironmentOutlined className="mr-2 text-red-500" />
                     Địa chỉ rạp
                   </Text>
@@ -373,7 +382,11 @@ export default function TicketBooking() {
                     value={selectedAddress || undefined}
                     style={{ width: "100%" }}
                     size="large"
-                    placeholder={selectedCinema ? "Chọn địa chỉ rạp" : "Vui lòng chọn rạp trước"}
+                    placeholder={
+                      selectedCinema
+                        ? "Chọn địa chỉ rạp"
+                        : "Vui lòng chọn rạp trước"
+                    }
                     onChange={(value: string) => setSelectedAddress(value)}
                     disabled={!selectedCinema}
                     className="!rounded-xl"
@@ -382,7 +395,9 @@ export default function TicketBooking() {
                     {cinemaAddresses.map((address) => (
                       <Option key={address.maCumRap} value={address.diaChi}>
                         <div className="py-1">
-                          <Text className="text-gray-800">{address.diaChi}</Text>
+                          <Text className="text-gray-800">
+                            {address.diaChi}
+                          </Text>
                         </div>
                       </Option>
                     ))}
@@ -396,26 +411,33 @@ export default function TicketBooking() {
 
                 {/* Showtime */}
                 <div className="mb-8">
-                  <Text strong className="flex items-center mb-4 text-gray-800 text-lg">
+                  <Text
+                    strong
+                    className="flex items-center mb-4 text-gray-800 text-lg"
+                  >
                     <ClockCircleOutlined className="mr-2 text-green-500" />
                     Suất chiếu
                   </Text>
                   <div className="grid grid-cols-2 gap-3">
-                    {["10:00", "13:00", "15:30", "18:00", "20:30"].map((time) => (
-                      <Button
-                        key={time}
-                        type={selectedShowtime === time ? "primary" : "default"}
-                        size="large"
-                        className={`!h-12 !rounded-xl !font-semibold !transition-all !duration-300 !transform ${
-                          selectedShowtime === time
-                            ? "!bg-gradient-to-r !from-blue-500 !to-purple-600 !shadow-xl !scale-105 hover:!scale-110"
-                            : "!bg-white !border-gray-300 hover:!border-blue-400 hover:!shadow-md hover:!scale-105"
-                        }`}
-                        onClick={() => setSelectedShowtime(time)}
-                      >
-                        {time}
-                      </Button>
-                    ))}
+                    {["10:00", "13:00", "15:30", "18:00", "20:30"].map(
+                      (time) => (
+                        <Button
+                          key={time}
+                          type={
+                            selectedShowtime === time ? "primary" : "default"
+                          }
+                          size="large"
+                          className={`!h-12 !rounded-xl !font-semibold !transition-all !duration-300 !transform ${
+                            selectedShowtime === time
+                              ? "!bg-gradient-to-r !from-blue-500 !to-purple-600 !shadow-xl !scale-105 hover:!scale-110"
+                              : "!bg-white !border-gray-300 hover:!border-blue-400 hover:!shadow-md hover:!scale-105"
+                          }`}
+                          onClick={() => setSelectedShowtime(time)}
+                        >
+                          {time}
+                        </Button>
+                      )
+                    )}
                   </div>
                 </div>
 
@@ -454,9 +476,15 @@ export default function TicketBooking() {
                 {/* Total Price */}
                 <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
                   <div className="flex justify-between items-center mb-2">
-                    <Text strong className="text-gray-800 text-lg">Tổng tiền:</Text>
-                    <Text strong className="text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                      {(selectedSeats.length * 120000).toLocaleString("vi-VN")} VNĐ
+                    <Text strong className="text-gray-800 text-lg">
+                      Tổng tiền:
+                    </Text>
+                    <Text
+                      strong
+                      className="text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"
+                    >
+                      {(selectedSeats.length * 120000).toLocaleString("vi-VN")}{" "}
+                      VNĐ
                     </Text>
                   </div>
                   <Text className="text-sm text-gray-600">
@@ -471,13 +499,21 @@ export default function TicketBooking() {
                   block
                   className="!h-14 !rounded-2xl !font-bold !text-lg !bg-gradient-to-r !from-purple-600 !to-pink-600 !border-0 !shadow-xl hover:!shadow-2xl !transition-all !duration-300 !transform hover:!scale-105"
                   onClick={handleBookTicket}
-                  disabled={!selectedCinema || !selectedAddress || !selectedShowtime || selectedSeats.length === 0}
+                  disabled={
+                    !selectedCinema ||
+                    !selectedAddress ||
+                    !selectedShowtime ||
+                    selectedSeats.length === 0
+                  }
                 >
                   <CheckCircleOutlined className="mr-2" />
-                  Xác Nhận Đặt Vé 
+                  Xác Nhận Đặt Vé
                 </Button>
-                
-                {(!selectedCinema || !selectedAddress || !selectedShowtime || selectedSeats.length === 0) && (
+
+                {(!selectedCinema ||
+                  !selectedAddress ||
+                  !selectedShowtime ||
+                  selectedSeats.length === 0) && (
                   <Text className="text-xs text-gray-500 text-center mt-3 block">
                     Vui lòng chọn đầy đủ thông tin để tiếp tục
                   </Text>
