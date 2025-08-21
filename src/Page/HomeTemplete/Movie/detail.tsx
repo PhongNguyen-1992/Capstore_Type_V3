@@ -9,9 +9,7 @@ import Footer from "../Componnent/Footer";
 export default function MovieDetail() {
   const { movieID } = useParams();
   const navigate = useNavigate();
-  const handleTrangChu = ()=>{
-    navigate('/')
-  }
+
   const handleBooking = () => {
   if (data?.maPhim) {
     navigate(`/TicketBooking/${data.maPhim}`);
@@ -140,12 +138,8 @@ export default function MovieDetail() {
                       >
                         <Ticket className="h-5 w-5" />
                         Đặt Vé Ngay
-                      </button>
-                      
-                      <button onClick={handleTrangChu} className="border-2 border-gray-300 hover:border-red-500 text-gray-700 hover:text-red-500 px-4 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:bg-red-50">
-                        <House className="h-5 w-5" />
-                        Trang Chủ
-                      </button>
+                      </button>                      
+                    
                     </div>
                   </div>
                 </div>

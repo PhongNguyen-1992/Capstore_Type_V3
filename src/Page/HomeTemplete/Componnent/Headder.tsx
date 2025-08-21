@@ -2,10 +2,19 @@ import { Button, Drawer, Avatar, Input } from "antd";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Home, Film, User, LogIn, Search, LogOut } from "lucide-react";
 import { userAuthStore } from "../../../store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PandaLogo from "./Logo";
 
 export default function Header() {
+  const [isMdUp, setIsMdUp] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMdUp(window.innerWidth >= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const { user, clearUser } = userAuthStore((state: any) => state);
   const handleLogout = () => {
     clearUser();
@@ -34,7 +43,9 @@ export default function Header() {
             {/* Logo Section */}
             <div className="flex items-center gap-8">
               <NavLink to="/" className="flex items-center gap-2 group">
-                <PandaLogo width={400} height={90} />
+                <div className="flex items-center">
+                  {isMdUp && <PandaLogo width={400} height={90} />}
+                </div>
               </NavLink>
 
               {/* Desktop Navigation */}
@@ -97,10 +108,11 @@ export default function Header() {
 
               <Button
                 type="text"
-                icon={<Menu className="h-5 w-5 text-white" />}
                 onClick={showDrawer}
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-800 transition-colors duration-300"
-              />
+                className="md:hidden flex items-center justify-center w-12 h-12 rounded-md bg-gray-300 p-2 hover:bg-gray-400 transition-colors duration-300"
+              >
+                <Menu className="h-6 w-6 text-white" />
+              </Button>
             </div>
           </div>
         </div>
@@ -108,21 +120,12 @@ export default function Header() {
 
       {/* Mobile Drawer */}
       <Drawer
-        title={
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <Film className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              PANDA
-            </span>
-          </div>
-        }
+        title={null}
         placement="right"
         onClose={closeDrawer}
         open={isDrawerOpen}
         width={280}
-        className="md:hidden"
+        className="md:hidden "
         closeIcon={<X className="h-5 w-5" />}
       >
         <div className="flex flex-col gap-4">

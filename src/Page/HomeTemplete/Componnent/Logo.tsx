@@ -1,10 +1,18 @@
 import { useRef, useEffect } from "react";
 
-const PandaLogo: React.FC<{ width?: number; height?: number }> = ({
+interface PandaLogoProps {
+  width?: number;
+  height?: number;
+  className?: string;
+}
+
+const PandaLogo: React.FC<PandaLogoProps> = ({
   width = 500,
   height = 120,
+  className,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -140,7 +148,10 @@ const PandaLogo: React.FC<{ width?: number; height?: number }> = ({
   }, [width, height]);
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <div
+      className={className} // <- đây để nhận className từ bên ngoài
+      style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+    >
       <canvas ref={canvasRef} width={width} height={height} style={{ borderRadius: 15 }} />
     </div>
   );
