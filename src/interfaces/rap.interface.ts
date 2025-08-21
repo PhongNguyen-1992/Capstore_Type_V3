@@ -2,12 +2,8 @@ export interface Rap {
     maHeThongRap:  string;
     tenHeThongRap: string;
     biDanh:        string;
-    logo:          string;
-}
-export interface Cinema {
-  maHeThongRap: string;
-  tenHeThongRap: string;
-}
+    logo:          string;}
+
 
 export interface LichChieuPhim {
     maLichChieu:       string;
@@ -61,4 +57,9 @@ export interface LstLichChieuTheoPhim {
     tenRap:            string;
     ngayChieuGioChieu: Date;
     giaVe:             number;
+}
+
+export interface SuatChieu {
+  ngayChieuGioChieu: string;
+  giaVe: number;
 }

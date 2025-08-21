@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface Banner {
   maBanner: number;
   maPhim: number;
@@ -32,4 +34,10 @@ export interface DetailMovie {
     sapChieu:      boolean;
     ngayKhoiChieu: Date;
     danhGia:       number;
+}
+
+export interface MovieSectionProps {
+  title: string;
+  movies: Movie[];
+  icon?: ReactNode;
 }

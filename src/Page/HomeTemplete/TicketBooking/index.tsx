@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Card,
   Button,
   Select,
-  Tag,
   Image,
   Spin,
   Alert,
@@ -16,21 +15,33 @@ import {
   notification,
   Badge,
 } from "antd";
-import { 
+import {
   EnvironmentOutlined,
   CheckCircleOutlined,
   LoadingOutlined,
-  StarOutlined,
   ClockCircleOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
 import type { Movie } from "@/interfaces/movie.interface";
-import type { Cinema, CumRap, Rap } from "@/interfaces/rap.interface";
+import type { CumRap, Rap } from "@/interfaces/rap.interface";
 import { getListMovie } from "@/service/movie.api";
-import { diaChiRap, getListCumRap } from "@/service/rap.api";
+import {
+  diaChiRap,
+  getListCumRap,
+  getNgayChieuVaGiaVe,
+} from "@/service/rap.api";
 import MovieBookingHeader from "./hearder";
+import RenderSeats from "./Seat/Seat";
+import TotalPrice from "./Pay/TotalPrice";
+import HeadderInfo from "./BookkingInfo/Headder";
 
-const { Title, Text, Paragraph } = Typography;
+// Interface cho suất chiếu mới
+interface SuatChieu {
+  ngayChieuGioChieu: string;
+  giaVe: number;
+}
+
+const { Title, Text } = Typography;
 const { Option } = Select;
 
 export default function TicketBooking() {
@@ -40,9 +51,13 @@ export default function TicketBooking() {
   const [cinemaAddresses, setCinemaAddresses] = useState<CumRap[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const [selectedCinema, setSelectedCinema] = useState<string>("");
+  const [selectedCinema, setSelectedCinema] = useState<string>("");  
   const [selectedShowtime, setSelectedShowtime] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);  
+  const [showtimes, setShowtimes] = useState<SuatChieu[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingShowtimes, setLoadingShowtimes] = useState<boolean>(false);
+  const [ticketPrice, setTicketPrice] = useState<number>(75000); // lấy từ API showtime
+
   // Lấy dữ liệu phim & danh sách rạp
   useEffect(() => {
     const fetchMovie = async () => {
@@ -78,15 +93,52 @@ export default function TicketBooking() {
     fetchRap();
   }, [movieID]);
 
-  // click chọn rạp sẽ show ra địa chỉ
-  const handleSelectCinema = async (cinema: Cinema) => {
+  // Hàm lấy suất chiếu và giá vé
+  const handleFetchShowtimes = async (maHeThongRap: string) => {
+    setLoadingShowtimes(true);
+    try {
+      const suatChieuData = await getNgayChieuVaGiaVe(maHeThongRap);
+
+      // Lọc và format dữ liệu suất chiếu
+      const uniqueShowtimes = suatChieuData.filter(
+        (item, index, self) =>
+          index ===
+          self.findIndex((t) => t.ngayChieuGioChieu === item.ngayChieuGioChieu)
+      );
+
+      setShowtimes(uniqueShowtimes);
+
+      // Cập nhật giá vé mặc định (lấy giá vé đầu tiên)
+      if (uniqueShowtimes.length > 0) {
+        setTicketPrice(uniqueShowtimes[0].giaVe);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy suất chiếu:", error);
+      notification.error({
+        message: "Lỗi",
+        description: "Không thể tải danh sách suất chiếu",
+      });
+      setShowtimes([]);
+    } finally {
+      setLoadingShowtimes(false);
+    }
+  };
+
+  // click chọn rạp sẽ show ra địa chỉ và suất chiếu
+  const handleSelectCinema = async (cinema: Rap) => {
     setSelectedCinema(cinema.tenHeThongRap);
-    setSelectedAddress(""); // Reset address when changing cinema
+    setSelectedAddress("");
+    setSelectedShowtime("");
+    setShowtimes([]);
 
     try {
+      // Lấy địa chỉ rạp
       const data = await diaChiRap(cinema.maHeThongRap);
       const addressesArray = Array.isArray(data) ? data : [data];
       setCinemaAddresses(addressesArray);
+
+      // Lấy suất chiếu và giá vé
+      await handleFetchShowtimes(cinema.maHeThongRap);
     } catch (error) {
       console.error("Lỗi khi lấy địa chỉ rạp:", error);
       notification.error({
@@ -96,13 +148,30 @@ export default function TicketBooking() {
     }
   };
 
-  // Toggle chọn ghế
-  const toggleSeat = (seatId: string) => {
-    setSelectedSeats((prev) =>
-      prev.includes(seatId)
-        ? prev.filter((id) => id !== seatId)
-        : [...prev, seatId]
-    );
+  // Xử lý khi chọn địa chỉ
+  const handleSelectAddress = (selectedAddressValue: string) => {
+    setSelectedAddress(selectedAddressValue);
+    setSelectedShowtime(""); // Reset showtime khi đổi địa chỉ
+  };
+
+  // Xử lý khi chọn suất chiếu
+  const handleSelectShowtime = (showtime: SuatChieu) => {
+    setSelectedShowtime(showtime.ngayChieuGioChieu);
+    setTicketPrice(showtime.giaVe); // Cập nhật giá vé theo suất chiếu đã chọn
+  };
+
+  // Format thời gian hiển thị
+  const formatShowtime = (dateTime: string): string => {
+    const date = new Date(dateTime);
+    const time = date.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const day = date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+    });
+    return `${time} - ${day}`;
   };
 
   // Đặt vé
@@ -120,72 +189,22 @@ export default function TicketBooking() {
       return;
     }
 
+    const selectedShowtimeData = showtimes.find(
+      (s) => s.ngayChieuGioChieu === selectedShowtime
+    );
+    const formattedShowtime = selectedShowtimeData
+      ? formatShowtime(selectedShowtimeData.ngayChieuGioChieu)
+      : selectedShowtime;
+
     notification.success({
       message: "Đặt vé thành công! 🎉",
-      description: `Đã đặt ${selectedSeats.length} ghế cho suất ${selectedShowtime} tại ${selectedCinema}`,
+      description: `Đã đặt ${selectedSeats.length} ghế cho suất ${formattedShowtime} tại ${selectedCinema}`,
       duration: 4,
     });
 
     // Reset form after successful booking
     setSelectedSeats([]);
     setSelectedShowtime("");
-  };
-
-  // Render ghế với thiết kế đẹp hơn
-  const renderSeats = () => {
-    const rows = ["A", "B", "C", "D", "E", "F", "G", "H"];
-    return (
-      <div className="space-y-3">
-        {rows.map((row) => (
-          <div key={row} className="flex items-center justify-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-lg shadow-md">
-              {row}
-            </div>
-            <div className="flex gap-2">
-              {Array.from({ length: 10 }, (_, i) => {
-                const seatId = `${row}${i + 1}`;
-                const isSelected = selectedSeats.includes(seatId);
-                const isOccupied = Math.random() < 0.15; // Reduced occupied seats for better UX
-
-                return (
-                  <Button
-                    key={seatId}
-                    size="small"
-                    disabled={isOccupied}
-                    className={`!w-12 !h-12 !p-0 !border-2 !rounded-xl !font-semibold !text-xs transition-all duration-300 transform ${
-                      isSelected
-                        ? "!bg-gradient-to-r !from-green-400 !to-green-600 !border-green-500 !text-white !shadow-xl !scale-110 hover:!scale-115"
-                        : isOccupied
-                        ? "!bg-gradient-to-r !from-red-100 !to-red-200 !border-red-300 !text-red-600 cursor-not-allowed opacity-60"
-                        : "!bg-gradient-to-r !from-blue-50 !to-indigo-50 !border-blue-200 !text-blue-700 hover:!bg-gradient-to-r hover:!from-blue-100 hover:!to-indigo-100 hover:!border-blue-400 hover:!shadow-lg hover:!scale-105"
-                    }`}
-                    onClick={() => !isOccupied && toggleSeat(seatId)}
-                  >
-                    {i + 1}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-
-        {/* Seat legend */}
-        <div className="flex justify-center gap-8 mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg"></div>
-            <Text className="text-sm font-medium text-gray-700">Còn trống</Text>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-green-600 rounded-lg"></div>
-            <Text className="text-sm font-medium text-gray-700">Đã chọn</Text>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-red-100 to-red-200 border-2 border-red-300 rounded-lg opacity-60"></div>
-            <Text className="text-sm font-medium text-gray-700">Đã bán</Text>
-          </div>
-        </div>
-      </div>
-    );
   };
 
   if (loading) {
@@ -230,7 +249,6 @@ export default function TicketBooking() {
         <div className="mb-6">
           <MovieBookingHeader />
         </div>
-
         <Row gutter={[32, 32]}>
           {/* Chọn ghế */}
           <Col xs={24} lg={16}>
@@ -265,7 +283,7 @@ export default function TicketBooking() {
 
                 {/* Seats */}
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-3xl shadow-inner">
-                  {renderSeats()}
+                  <RenderSeats />
                 </div>
               </div>
             </Card>
@@ -274,40 +292,11 @@ export default function TicketBooking() {
           {/* Thông tin đặt vé */}
           <Col xs={24} lg={8}>
             <Card
-              className="!shadow-2xl !border-0 !rounded-3xl sticky top-8 overflow-hidden"
+              className="!shadow-2xl !border-0 !rounded-3xl sticky  overflow-hidden"
               bodyStyle={{ padding: 0 }}
             >
-              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white">
-                <Title level={3} className="!text-white !mb-0 text-center">
-                  <StarOutlined className="mr-2" />
-                  Thông Tin Đặt Vé
-                </Title>
-              </div>
-
               <div className="p-6">
-                {/* Movie Info */}
-                <div className="mb-8">
-                  <div className="relative mb-4 rounded-2xl overflow-hidden shadow-xl">
-                    <Image
-                      src={movieData.hinhAnh}
-                      alt={movieData.tenPhim}
-                      className="w-full h-64 object-cover"
-                      preview={false}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <Title level={4} className="!text-white !mb-1">
-                        {movieData.tenPhim}
-                      </Title>
-                    </div>
-                  </div>
-                  <Paragraph
-                    ellipsis={{ rows: 3, expandable: true, symbol: "Xem thêm" }}
-                    className="text-gray-600 text-sm leading-relaxed"
-                  >
-                    {movieData.moTa}
-                  </Paragraph>
-                </div>
+                <HeadderInfo />
 
                 <Divider className="!border-gray-200" />
 
@@ -386,7 +375,7 @@ export default function TicketBooking() {
                         ? "Chọn địa chỉ rạp"
                         : "Vui lòng chọn rạp trước"
                     }
-                    onChange={(value: string) => setSelectedAddress(value)}
+                    onChange={handleSelectAddress}
                     disabled={!selectedCinema}
                     className="!rounded-xl"
                     dropdownClassName="!rounded-xl"
@@ -417,63 +406,70 @@ export default function TicketBooking() {
                     <ClockCircleOutlined className="mr-2 text-green-500" />
                     Suất chiếu
                   </Text>
-                  <div className="grid grid-cols-2 gap-3">
-                    {["10:00", "13:00", "15:30", "18:00", "20:30"].map(
-                      (time) => (
+
+                  <div className="grid grid-cols-1 gap-3 max-h-64 overflow-y-auto">
+                    {loadingShowtimes ? (
+                      <div className="text-center py-4">
+                        <Spin size="small" />
+                        <Text type="secondary" className="ml-2">
+                          Đang tải suất chiếu...
+                        </Text>
+                      </div>
+                    ) : showtimes.length > 0 ? (
+                      showtimes.map((showtime, index) => (
                         <Button
-                          key={time}
+                          key={`${showtime.ngayChieuGioChieu}-${index}`}
                           type={
-                            selectedShowtime === time ? "primary" : "default"
+                            selectedShowtime === showtime.ngayChieuGioChieu
+                              ? "primary"
+                              : "default"
                           }
                           size="large"
-                          className={`!h-12 !rounded-xl !font-semibold !transition-all !duration-300 !transform ${
-                            selectedShowtime === time
+                          className={`!h-16 !rounded-xl !font-semibold !transition-all !duration-300 !transform !flex !flex-col !justify-center !items-start !px-4 ${
+                            selectedShowtime === showtime.ngayChieuGioChieu
                               ? "!bg-gradient-to-r !from-blue-500 !to-purple-600 !shadow-xl !scale-105 hover:!scale-110"
                               : "!bg-white !border-gray-300 hover:!border-blue-400 hover:!shadow-md hover:!scale-105"
                           }`}
-                          onClick={() => setSelectedShowtime(time)}
+                          onClick={() => handleSelectShowtime(showtime)}
                         >
-                          {time}
+                          <div
+                            className={`text-sm font-bold ${
+                              selectedShowtime === showtime.ngayChieuGioChieu
+                                ? "text-white"
+                                : "text-gray-800"
+                            }`}
+                          >
+                            {formatShowtime(showtime.ngayChieuGioChieu)}
+                          </div>
+                          <div
+                            className={`text-xs ${
+                              selectedShowtime === showtime.ngayChieuGioChieu
+                                ? "text-white/90"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            Giá vé: {showtime.giaVe.toLocaleString("vi-VN")} VNĐ
+                          </div>
                         </Button>
-                      )
+                      ))
+                    ) : selectedCinema ? (
+                      <div className="text-center py-4">
+                        <Text type="secondary">
+                          Không có suất chiếu cho phim này
+                        </Text>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <Text type="secondary">Chọn rạp để xem suất chiếu</Text>
+                      </div>
                     )}
                   </div>
                 </div>
 
                 <Divider className="!border-gray-200" />
 
-                {/* Selected Seats */}
-                <div className="mb-8">
-                  <Text strong className="block mb-4 text-gray-800 text-lg">
-                    Ghế đã chọn ({selectedSeats.length} ghế)
-                  </Text>
-                  <div className="min-h-[80px] p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border">
-                    {selectedSeats.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {selectedSeats.map((seat) => (
-                          <Tag
-                            key={seat}
-                            color="success"
-                            closable
-                            onClose={() => toggleSeat(seat)}
-                            className="!px-3 !py-1 !text-sm !font-medium !rounded-lg !border-0"
-                          >
-                            {seat}
-                          </Tag>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-12">
-                        <Text className="text-gray-500 text-center">
-                          🪑 Chưa chọn ghế nào
-                        </Text>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
                 {/* Total Price */}
-                <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
+                {/* <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
                   <div className="flex justify-between items-center mb-2">
                     <Text strong className="text-gray-800 text-lg">
                       Tổng tiền:
@@ -482,13 +478,29 @@ export default function TicketBooking() {
                       strong
                       className="text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"
                     >
-                      {(selectedSeats.length * 120000).toLocaleString("vi-VN")}{" "}
+                      {(selectedSeats.length * ticketPrice).toLocaleString(
+                        "vi-VN"
+                      )}{" "}
                       VNĐ
                     </Text>
                   </div>
                   <Text className="text-sm text-gray-600">
-                    {selectedSeats.length} ghế × 120.000 VNĐ
+                    {selectedSeats.length} ghế ×{" "}
+                    {ticketPrice.toLocaleString("vi-VN")} VNĐ
                   </Text>
+                  {selectedShowtime && (
+                    <Text className="text-xs text-blue-600 mt-1 block">
+                      * Giá vé đã bao gồm suất chiếu đã chọn
+                    </Text>
+                  )}
+                </div> */}
+                <div>
+                  {/* Component tổng tiền */}
+                  <TotalPrice
+                    selectedSeats={selectedSeats}
+                    ticketPrice={ticketPrice}
+                    selectedShowtime={selectedShowtime}
+                  />
                 </div>
 
                 {/* Booking Button */}
