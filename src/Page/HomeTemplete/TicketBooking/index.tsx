@@ -23,23 +23,20 @@ import {
   HomeOutlined,
 } from "@ant-design/icons";
 import type { Movie } from "@/interfaces/movie.interface";
-import type { CumRap, Rap } from "@/interfaces/rap.interface";
+import type { CumRap, Rap, SuatChieu } from "@/interfaces/rap.interface";
 import { getListMovie } from "@/service/movie.api";
 import {
   diaChiRap,
   getListCumRap,
   getNgayChieuVaGiaVe,
 } from "@/service/rap.api";
-import MovieBookingHeader from "./hearder";
+import MovieBookingHeader from "../Componnent/hearderBooking";
 import RenderSeats from "./Seat/Seat";
 import TotalPrice from "./Pay/TotalPrice";
-import HeadderInfo from "./BookkingInfo/Headder";
+import HeadderInfo from "./Bookking/Info";
 
 // Interface cho suất chiếu mới
-interface SuatChieu {
-  ngayChieuGioChieu: string;
-  giaVe: number;
-}
+
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -51,7 +48,7 @@ export default function TicketBooking() {
   const [cinemaAddresses, setCinemaAddresses] = useState<CumRap[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const [selectedCinema, setSelectedCinema] = useState<string>("");  
+  const [selectedCinema, setSelectedCinema] = useState<string>("");
   const [selectedShowtime, setSelectedShowtime] = useState<string>("");
   const [showtimes, setShowtimes] = useState<SuatChieu[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -94,6 +91,7 @@ export default function TicketBooking() {
   }, [movieID]);
 
   // Hàm lấy suất chiếu và giá vé
+
   const handleFetchShowtimes = async (maHeThongRap: string) => {
     setLoadingShowtimes(true);
     try {

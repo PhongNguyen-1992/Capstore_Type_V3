@@ -1,17 +1,9 @@
 import { Button, Drawer, Avatar, Input } from "antd";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-  Menu,
-  X,
-  Home,
-  Film,
-  User,
-  LogIn,
-  Search,  
-  LogOut,
-} from "lucide-react";
+import { Menu, X, Home, Film, User, LogIn, Search, LogOut } from "lucide-react";
 import { userAuthStore } from "../../../store";
 import { useState } from "react";
+import PandaLogo from "./Logo";
 
 export default function Header() {
   const { user, clearUser } = userAuthStore((state: any) => state);
@@ -36,21 +28,13 @@ export default function Header() {
   return (
     <>
       {/* Main Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-25">
             {/* Logo Section */}
             <div className="flex items-center gap-8">
               <NavLink to="/" className="flex items-center gap-2 group">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
-                    <Film className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-wider">
-                  PANDA
-                </h1>
+                <PandaLogo width={400} height={90} />
               </NavLink>
 
               {/* Desktop Navigation */}
@@ -64,8 +48,8 @@ export default function Header() {
                       className={({ isActive }) =>
                         `flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                           isActive
-                            ? "bg-blue-50 text-blue-600 shadow-sm"
-                            : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                            ? "bg-gray-700 text-white shadow-sm"
+                            : "text-gray-300 hover:bg-gray-800 hover:text-white"
                         }`
                       }
                     >
@@ -79,30 +63,27 @@ export default function Header() {
 
             {/* Right Section */}
             <div className="flex items-center gap-3">
-              {/* Search */}
               <div className="hidden md:block w-64">
                 <Input
                   placeholder="Nhập Tên Phim..."
                   prefix={<Search className="h-4 w-4 text-gray-400" />}
+                  className="bg-gray-800 text-white border-gray-700 placeholder-gray-400"
                 />
               </div>
               {user ? (
-                <>
-                  {/* User Section - Desktop */}
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      size="large"
-                      src={user.avatar}
-                      icon={<User className="h-4 w-4" />}
-                      className="bg-gradient-to-br from-blue-500 to-purple-500"
-                    />
-                    <div className="hidden lg:block">
-                      <h1 className="text-md font-semibold text-gray-800 m-0">
-                        {user.hoTen}
-                      </h1>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <Avatar
+                    size="large"
+                    src={user.avatar}
+                    icon={<User className="h-4 w-4 text-white" />}
+                    className="bg-gradient-to-br from-blue-500 to-purple-500"
+                  />
+                  <div className="hidden lg:block">
+                    <h1 className="text-md font-semibold text-white m-0">
+                      {user.hoTen}
+                    </h1>
                   </div>
-                </>
+                </div>
               ) : (
                 <Button
                   onClick={handleLogin}
@@ -114,12 +95,11 @@ export default function Header() {
                 </Button>
               )}
 
-              {/* Mobile Menu Button */}
               <Button
                 type="text"
-                icon={<Menu className="h-5 w-5" />}
+                icon={<Menu className="h-5 w-5 text-white" />}
                 onClick={showDrawer}
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors duration-300"
+                className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-800 transition-colors duration-300"
               />
             </div>
           </div>

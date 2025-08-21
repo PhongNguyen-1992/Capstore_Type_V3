@@ -71,6 +71,11 @@ export const getNgayChieuVaGiaVe = async (
       heThong.lstCumRap.flatMap((cumRap: any) =>
         cumRap.danhSachPhim.flatMap((phim: any) =>
           phim.lstLichChieuTheoPhim.map((lich: any) => ({
+            heThongRap: heThong.tenHeThongRap, // CGV, BHD, Galaxy ...
+            cumRap: cumRap.tenCumRap,          // CGV Aeon Tân Phú
+            diaChi: cumRap.diaChi,             // Tầng 3, Aeon Mall
+            phim: phim.tenPhim,                // Tên phim
+            maPhim: phim.maPhim,               // Mã phim (nếu cần)
             ngayChieuGioChieu: lich.ngayChieuGioChieu,
             giaVe: lich.giaVe,
           }))
@@ -84,3 +89,4 @@ export const getNgayChieuVaGiaVe = async (
     return [];
   }
 };
+

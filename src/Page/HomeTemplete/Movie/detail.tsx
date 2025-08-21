@@ -3,6 +3,8 @@ import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Film, Clock, AlertCircle, Play, Ticket, Star, House } from "lucide-react";
 import { getMovieDetailsAPI } from "../../../service/movie.api";
+import Header from "../Componnent/Headder";
+import Footer from "../Componnent/Footer";
 
 export default function MovieDetail() {
   const { movieID } = useParams();
@@ -67,7 +69,9 @@ export default function MovieDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
+    
+    <div className="min-h-screen bg-gray-50 space-y-6">
+      <Header/>
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-6 gap-0">
@@ -243,6 +247,7 @@ export default function MovieDetail() {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }
