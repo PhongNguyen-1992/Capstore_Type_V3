@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button, Card, Modal } from "antd";
+import { Button, Card, message, Modal } from "antd";
 import { Eye, Ticket, Star, Calendar, Play } from "lucide-react";
 import type { Movie } from "../../../interfaces/movie.interface";
 import { useNavigate } from "react-router-dom";
+import { userAuthStore } from "@/store";
 
 interface MovieProps {
   movie: Movie;
@@ -13,7 +14,7 @@ export default function MovieCard({ movie }: MovieProps) {
   const [openTrailer, setOpenTrailer] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
+const { user } = userAuthStore();
   // Detect mobile device
   useEffect(() => {
     const checkIsMobile = () => {
@@ -30,9 +31,20 @@ export default function MovieCard({ movie }: MovieProps) {
     navigate(`/movie-detail/${movie.maPhim}`);
   };
 
-  const handleBooking = () => {
-    navigate(`/TicketBooking/${movie.maPhim}`);
-  };
+  const handleBooking = () => { 
+  if (!user) {
+    message.warning("Vui lòng đăng nhập để đặt vé!");    
+   setTimeout(() => {
+      navigate("/auth/login", { 
+        state: { from: { pathname: `/TicketBooking/${movie.maPhim}` } }
+      });
+    }, 1500);
+    return;
+  }
+  
+  // If user is logged in, proceed to booking
+  navigate(`/TicketBooking/${movie.maPhim}`);
+};
 
   const handleTrailer = () => {
     if (movie.trailer) {
