@@ -3,7 +3,6 @@ import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-console.log("load env", import.meta.env.VITE_API_URL);
 
 // cấu hình tanstack query
 // refetchOnWindowFocus: false: không tự động refetch khi focus lại tab
