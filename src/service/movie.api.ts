@@ -37,4 +37,4 @@ export const getMovieDetailsAPI = async (movieID:any) => {
     } catch (error) {
     }
 };
-console.log(getMovieDetailsAPI);
+

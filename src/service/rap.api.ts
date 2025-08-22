@@ -1,16 +1,16 @@
 import type { BaseAPIResponse } from "@/interfaces/base.interface";
 import type {
   CumRap,
+  HeThongRap,
+  LichChieuPhim,
   MovieShowtime,
-  Rap,
-  SuatChieu,
 } from "@/interfaces/rap.interface";
 import api from "./api";
 
 // Danh sách hệ thống rạp
-export const getListCumRap = async (): Promise<Rap[] | undefined> => {
+export const getListCumRap = async (): Promise<HeThongRap[] | undefined> => {
   try {
-    const response = await api.get<BaseAPIResponse<Rap[]>>(
+    const response = await api.get<BaseAPIResponse<HeThongRap[]>>(
       "/QuanLyRap/LayThongTinHeThongRap"
     );
     return response.data.content;
@@ -44,49 +44,31 @@ export const diaChiRap = async (cumRap: string): Promise<CumRap> => {
   }
 };
 
-// API suất chiếu gốc (trả về nested object)
-export const suatChieuGoc = async (
+// ==== Hàm lọc suất chiếu theo Hệ thống + Cụm Rạp ====
+export const getSuatChieu = async (
+  maPhim: number,
   maHeThongRap: string,
-  maNhom: string = "GP01"
-): Promise<any> => {
+  maCumRap: string
+): Promise<LichChieuPhim[]> => {
   try {
-    const response = await api.get<BaseAPIResponse<any>>(
-      `/QuanLyRap/LayThongTinLichChieuHeThongRap?maHeThongRap=${maHeThongRap}&maNhom=${maNhom}`
+    const data = await getLichChieuPhim(maPhim);
+
+    if (!data) return [];
+
+    // Tìm hệ thống rạp theo mã
+    const heThong = data.heThongRapChieu.find(
+      (h) => h.maHeThongRap === maHeThongRap
     );
-    return response.data.content;
+    if (!heThong) return [];
+
+    // Tìm cụm rạp trong hệ thống đó
+    const cumRap = heThong.cumRapChieu.find((c) => c.maCumRap === maCumRap);
+    if (!cumRap) return [];
+
+    // Trả về danh sách suất chiếu
+    return cumRap.lichChieuPhim || [];
   } catch (error) {
-    console.error("Error fetching suất chiếu:", error);
-    throw error;
-  }
-};
-
-export const getNgayChieuVaGiaVe = async (
-  maHeThongRap: string,
-  maNhom: string = "GP01"
-): Promise<SuatChieu[]> => {
-  try {
-    const content = await suatChieuGoc(maHeThongRap, maNhom);
-
-    const result: SuatChieu[] = content.flatMap((heThong: any) =>
-      heThong.lstCumRap.flatMap((cumRap: any) =>
-        cumRap.danhSachPhim.flatMap((phim: any) =>
-          phim.lstLichChieuTheoPhim.map((lich: any) => ({
-            heThongRap: heThong.tenHeThongRap, // CGV, BHD, Galaxy ...
-            cumRap: cumRap.tenCumRap,          // CGV Aeon Tân Phú
-            diaChi: cumRap.diaChi,             // Tầng 3, Aeon Mall
-            phim: phim.tenPhim,                // Tên phim
-            maPhim: phim.maPhim,               // Mã phim (nếu cần)
-            ngayChieuGioChieu: lich.ngayChieuGioChieu,
-            giaVe: lich.giaVe,
-          }))
-        )
-      )
-    );
-
-    return result;
-  } catch (error) {
-    console.error("Error parsing suất chiếu:", error);
+    console.error("Error fetching suat chieu:", error);
     return [];
   }
 };
-

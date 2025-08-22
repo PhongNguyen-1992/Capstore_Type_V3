@@ -1,176 +1,121 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  Card,
-  Button,
-  Select,
-  Image,
-  Spin,
-  Alert,
   Typography,
+  Button,
   Row,
   Col,
+  Card,
   Space,
-  Divider,
   notification,
   Badge,
+  Tooltip,
+  Rate,
+  Divider,
 } from "antd";
 import {
-  EnvironmentOutlined,
-  CheckCircleOutlined,
-  LoadingOutlined,
-  ClockCircleOutlined,
-  HomeOutlined,
-} from "@ant-design/icons";
+  Film,
+  Clock,
+  MapPin,
+  Users,
+  CheckCircle2,
+  AlertCircle,
+  Play,
+  Calendar,
+  Star,
+} from "lucide-react";
+import { getMovieDetailsAPI } from "@/service/movie.api";
+import { getLichChieuPhim } from "@/service/rap.api";
+import type {
+  MovieShowtime,
+  HeThongRap,
+  CumRap,
+  LichChieuPhim,
+} from "@/interfaces/rap.interface";
 import type { Movie } from "@/interfaces/movie.interface";
-import type { CumRap, Rap, SuatChieu } from "@/interfaces/rap.interface";
-import { getListMovie } from "@/service/movie.api";
-import {
-  diaChiRap,
-  getListCumRap,
-  getNgayChieuVaGiaVe,
-} from "@/service/rap.api";
 import MovieBookingHeader from "../Componnent/hearderBooking";
-import RenderSeats from "./Seat/Seat";
-import TotalPrice from "./Pay/TotalPrice";
-import HeadderInfo from "./Bookking/Info";
 import Footer from "../Componnent/Footer";
 
-// Interface cho suất chiếu mới
-
-
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 export default function TicketBooking() {
   const { movieID } = useParams<{ movieID: string }>();
-  const [movieData, setMovieData] = useState<Movie | null>(null);
-  const [cinemaList, setCinemaList] = useState<Rap[]>([]);
-  const [cinemaAddresses, setCinemaAddresses] = useState<CumRap[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<string>("");
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const [selectedCinema, setSelectedCinema] = useState<string>("");
-  const [selectedShowtime, setSelectedShowtime] = useState<string>("");
-  const [showtimes, setShowtimes] = useState<SuatChieu[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [loadingShowtimes, setLoadingShowtimes] = useState<boolean>(false);
-  const [ticketPrice, setTicketPrice] = useState<number>(75000); // lấy từ API showtime
 
-  // Lấy dữ liệu phim & danh sách rạp
+  // State phim
+  const [movie, setMovie] = useState<Movie | null>(null);
+
+  // State lịch chiếu
+  const [showtimeData, setShowtimeData] = useState<MovieShowtime | null>(null);
+  const [cinemas, setCinemas] = useState<HeThongRap[]>([]);
+  const [cinemaAddresses, setCinemaAddresses] = useState<CumRap[]>([]);
+  const [showtimes, setShowtimes] = useState<LichChieuPhim[]>([]);
+
+  // State lựa chọn
+  const [selectedCinema, setSelectedCinema] = useState<string>("");
+  const [selectedCinemaId, setSelectedCinemaId] = useState<string>("");
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
+  const [selectedShowtime, setSelectedShowtime] = useState<string>("");
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+
+  // Fetch movie details
   useEffect(() => {
     const fetchMovie = async () => {
+      if (!movieID) return;
       try {
-        const movies = await getListMovie();
-        const foundMovie = movies.find((m) => String(m.maPhim) === movieID);
-        setMovieData(foundMovie || null);
-      } catch (error) {
-        console.error(error);
-        notification.error({
-          message: "Lỗi",
-          description: "Không thể tải thông tin phim",
-        });
-      } finally {
-        setLoading(false);
+        const data = await getMovieDetailsAPI(Number(movieID));
+        setMovie(data ?? null);
+      } catch (err) {
+        console.error("Lỗi tải phim:", err);
       }
     };
-
-    const fetchRap = async () => {
-      try {
-        const rap = await getListCumRap();
-        setCinemaList(rap || []);
-      } catch (error) {
-        console.error(error);
-        notification.error({
-          message: "Lỗi",
-          description: "Không thể tải danh sách rạp",
-        });
-      }
-    };
-
     fetchMovie();
-    fetchRap();
   }, [movieID]);
 
-  // Hàm lấy suất chiếu và giá vé
-
-  const handleFetchShowtimes = async (maHeThongRap: string) => {
-    setLoadingShowtimes(true);
-    try {
-      const suatChieuData = await getNgayChieuVaGiaVe(maHeThongRap);
-
-      // Lọc và format dữ liệu suất chiếu
-      const uniqueShowtimes = suatChieuData.filter(
-        (item, index, self) =>
-          index ===
-          self.findIndex((t) => t.ngayChieuGioChieu === item.ngayChieuGioChieu)
-      );
-
-      setShowtimes(uniqueShowtimes);
-
-      // Cập nhật giá vé mặc định (lấy giá vé đầu tiên)
-      if (uniqueShowtimes.length > 0) {
-        setTicketPrice(uniqueShowtimes[0].giaVe);
+  // Fetch showtime
+  useEffect(() => {
+    const fetchShowtime = async () => {
+      if (!movieID) return;
+      try {
+        const data = await getLichChieuPhim(Number(movieID));
+        setShowtimeData(data ?? null);
+        setCinemas(data?.heThongRapChieu || []);
+      } catch (err) {
+        console.error("Lỗi tải lịch chiếu:", err);
       }
-    } catch (error) {
-      console.error("Lỗi khi lấy suất chiếu:", error);
-      notification.error({
-        message: "Lỗi",
-        description: "Không thể tải danh sách suất chiếu",
-      });
-      setShowtimes([]);
-    } finally {
-      setLoadingShowtimes(false);
-    }
-  };
+    };
+    fetchShowtime();
+  }, [movieID]);
 
-  // click chọn rạp sẽ show ra địa chỉ và suất chiếu
-  const handleSelectCinema = async (cinema: Rap) => {
+  // Chọn rạp
+  const handleSelectCinema = (cinema: HeThongRap) => {
     setSelectedCinema(cinema.tenHeThongRap);
+    setSelectedCinemaId(cinema.maHeThongRap);
     setSelectedAddress("");
     setSelectedShowtime("");
+    setSelectedSeats([]);
+
+    const heThong = showtimeData?.heThongRapChieu.find(
+      (h) => h.maHeThongRap === cinema.maHeThongRap
+    );
+    setCinemaAddresses(heThong?.cumRapChieu || []);
     setShowtimes([]);
-
-    try {
-      // Lấy địa chỉ rạp
-      const data = await diaChiRap(cinema.maHeThongRap);
-      const addressesArray = Array.isArray(data) ? data : [data];
-      setCinemaAddresses(addressesArray);
-
-      // Lấy suất chiếu và giá vé
-      await handleFetchShowtimes(cinema.maHeThongRap);
-    } catch (error) {
-      console.error("Lỗi khi lấy địa chỉ rạp:", error);
-      notification.error({
-        message: "Lỗi",
-        description: "Không thể tải danh sách địa chỉ rạp",
-      });
-    }
   };
 
-  // Xử lý khi chọn địa chỉ
-  const handleSelectAddress = (selectedAddressValue: string) => {
-    setSelectedAddress(selectedAddressValue);
-    setSelectedShowtime(""); // Reset showtime khi đổi địa chỉ
+  // Chọn cụm rạp
+  const handleSelectAddress = (maCumRap: string) => {
+    setSelectedAddress(maCumRap);
+    setSelectedShowtime("");
+    setSelectedSeats([]);
+
+    const cumRap = cinemaAddresses.find((c) => c.maCumRap === maCumRap);
+    setShowtimes(cumRap?.lichChieuPhim || []);
   };
 
-  // Xử lý khi chọn suất chiếu
-  const handleSelectShowtime = (showtime: SuatChieu) => {
-    setSelectedShowtime(showtime.ngayChieuGioChieu);
-    setTicketPrice(showtime.giaVe); // Cập nhật giá vé theo suất chiếu đã chọn
-  };
-
-  // Format thời gian hiển thị
-  const formatShowtime = (dateTime: string): string => {
-    const date = new Date(dateTime);
-    const time = date.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const day = date.toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-    });
-    return `${time} - ${day}`;
+  // Chọn ghế
+  const handleSelectSeat = (seat: string) => {
+    setSelectedSeats((prev) =>
+      prev.includes(seat) ? prev.filter((s) => s !== seat) : [...prev, seat]
+    );
   };
 
   // Đặt vé
@@ -183,357 +128,517 @@ export default function TicketBooking() {
     ) {
       notification.warning({
         message: "Thông tin chưa đầy đủ",
-        description: "Vui lòng chọn đủ rạp, địa chỉ, suất chiếu và ghế ngồi",
+        description: "Vui lòng chọn rạp, cụm rạp, suất chiếu và ghế",
+        icon: <AlertCircle className="text-yellow-500" />,
       });
       return;
     }
 
-    const selectedShowtimeData = showtimes.find(
-      (s) => s.ngayChieuGioChieu === selectedShowtime
-    );
-    const formattedShowtime = selectedShowtimeData
-      ? formatShowtime(selectedShowtimeData.ngayChieuGioChieu)
-      : selectedShowtime;
-
     notification.success({
-      message: "Đặt vé thành công! 🎉",
-      description: `Đã đặt ${selectedSeats.length} ghế cho suất ${formattedShowtime} tại ${selectedCinema}`,
+      message: "Đặt vé thành công",
+      description: `Đã đặt ${selectedSeats.length} ghế tại ${selectedCinema} - suất chiếu ${selectedShowtime}`,
       duration: 4,
+      icon: <CheckCircle2 className="text-green-500" />,
     });
 
-    // Reset form after successful booking
     setSelectedSeats([]);
-    setSelectedShowtime("");
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="text-center space-y-4">
-          <Spin
-            size="large"
-            indicator={
-              <LoadingOutlined
-                style={{ fontSize: 48, color: "#3B82F6" }}
-                spin
-              />
-            }
-          />
-          <Text className="text-xl font-medium text-gray-700">
-            Đang tải thông tin phim...
-          </Text>
-          <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full mx-auto animate-pulse"></div>
-        </div>
-      </div>
-    );
-  }
+  // Get selected showtime details for summary
+  const getSelectedShowtimeDetails = () => {
+    if (!selectedShowtime) return null;
 
-  if (!movieData) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <Alert
-          message="Không tìm thấy phim"
-          description="Phim bạn đang tìm kiếm không tồn tại hoặc đã bị xóa"
-          type="error"
-          showIcon
-          className="max-w-md !rounded-2xl !shadow-xl"
-        />
-      </div>
-    );
-  }
+    const showtime = showtimes.find((s) => s.maLichChieu === selectedShowtime);
+    if (!showtime) return null;
+
+    return new Date(showtime.ngayChieuGioChieu);
+  };
+
+  // Get selected address name
+  const getSelectedAddressName = () => {
+    if (!selectedAddress) return "";
+    const cumRap = cinemaAddresses.find((c) => c.maCumRap === selectedAddress);
+    return cumRap?.tenCumRap || selectedAddress;
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-8">
-      <div className="max-w-7xl mx-auto px- space-y-16">
-        <div className="mb-6">
-          <MovieBookingHeader />
-        </div>
-        <Row gutter={[32, 32]}>
-          {/* Chọn ghế */}
-          <Col xs={24} lg={16}>
-            <Card
-              className="!shadow-2xl !border-0 !rounded-3xl overflow-hidden"
-              bodyStyle={{ padding: 0 }}
-            >
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <CheckCircleOutlined className="mr-3 text-2xl" />
-                    <Title level={3} className="!text-white !mb-0">
-                      Chọn ghế ngồi
-                    </Title>
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50">
+      <MovieBookingHeader />
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Movie Info Card */}
+        {movie && (
+          <Card className="mb-8 shadow-xl rounded-2xl overflow-hidden border-0">
+            <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 text-white">
+              <Row gutter={[32, 24]} className="p-8">
+                {/* Movie Poster */}
+                <Col xs={24} md={8} lg={6}>
+                  <div className="relative group">
+                    <img
+                      src={movie.hinhAnh}
+                      alt={movie.tenPhim}
+                      className="w-full h-auto max-h-96 object-cover rounded-xl shadow-2xl transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/20 rounded-xl group-hover:bg-black/10 transition-colors duration-300"></div>
                   </div>
-                  <Badge
-                    count={selectedSeats.length}
-                    className="bg-white text-blue-600"
-                  />
-                </div>
-              </div>
+                </Col>
 
-              <div className="p-8">
-                {/* Screen */}
-                <div className="relative mb-12">
-                  <div className="h-4 bg-gradient-to-r from-transparent via-gray-400 to-transparent rounded-full mx-auto w-4/5 mb-3 shadow-lg"></div>
-                  <div className="h-2 bg-gradient-to-r from-transparent via-gray-300 to-transparent rounded-full mx-auto w-3/5 mb-4"></div>
-                  <Text className="block text-center text-gray-600 font-semibold text-lg">
-                    MÀN HÌNH
-                  </Text>
-                </div>
+                {/* Movie Details */}
+                <Col xs={24} md={16} lg={18}>
+                  <div className="h-full flex flex-col justify-between">
+                    <div>
+                      <Title
+                        level={1}
+                        className="!text-white !mb-4 !text-3xl lg:!text-4xl font-bold"
+                      >
+                        {movie.tenPhim}
+                      </Title>
 
-                {/* Seats */}
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-3xl shadow-inner">
-                  <RenderSeats />
-                </div>
-              </div>
-            </Card>
-          </Col>
-
-          {/* Thông tin đặt vé */}
-          <Col xs={24} lg={8}>
-            <Card
-              className="!shadow-2xl !border-0 !rounded-3xl sticky  overflow-hidden"
-              bodyStyle={{ padding: 0 }}
-            >
-              <div className="p-6">
-                <HeadderInfo />
-
-                <Divider className="!border-gray-200" />
-
-                {/* Cinema Selection */}
-                <div className="mb-8">
-                  <Text
-                    strong
-                    className="flex items-center mb-4 text-gray-800 text-lg"
-                  >
-                    <HomeOutlined className="mr-2 text-orange-500" />
-                    Chọn rạp chiếu
-                  </Text>
-                  <Row gutter={[12, 12]}>
-                    {cinemaList.map((cinema) => (
-                      <Col xs={12} sm={8} key={cinema.maHeThongRap}>
-                        <Card
-                          hoverable
-                          size="small"
-                          onClick={() => handleSelectCinema(cinema)}
-                          className={`!cursor-pointer !rounded-xl !transition-all !duration-300 !transform hover:!scale-105 hover:!shadow-lg ${
-                            selectedCinema === cinema.tenHeThongRap
-                              ? "!border-2 !border-blue-500 !shadow-xl !bg-blue-50"
-                              : "!border-gray-200"
-                          }`}
-                        >
-                          <Space
-                            direction="vertical"
-                            align="center"
-                            className="w-full"
-                          >
-                            <Image
-                              src={cinema.logo}
-                              alt={cinema.tenHeThongRap}
-                              width={50}
-                              height={50}
-                              preview={false}
-                              className="!rounded-lg object-cover"
-                            />
-                            <Text
-                              className={`text-center font-medium ${
-                                selectedCinema === cinema.tenHeThongRap
-                                  ? "text-blue-600"
-                                  : "text-gray-700"
-                              }`}
-                              style={{
-                                textTransform:
-                                  cinema.tenHeThongRap === "cgv"
-                                    ? "uppercase"
-                                    : "none",
-                              }}
-                            >
-                              {cinema.tenHeThongRap}
-                            </Text>
-                          </Space>
-                        </Card>
-                      </Col>
-                    ))}
-                  </Row>
-                </div>
-
-                {/* Address Selection*/}
-                <div className="mb-8">
-                  <Text
-                    strong
-                    className="flex items-center mb-4 text-gray-800 text-lg"
-                  >
-                    <EnvironmentOutlined className="mr-2 text-red-500" />
-                    Địa chỉ rạp
-                  </Text>
-                  <Select
-                    value={selectedAddress || undefined}
-                    style={{ width: "100%" }}
-                    size="large"
-                    placeholder={
-                      selectedCinema
-                        ? "Chọn địa chỉ rạp"
-                        : "Vui lòng chọn rạp trước"
-                    }
-                    onChange={handleSelectAddress}
-                    disabled={!selectedCinema}
-                    className="!rounded-xl"
-                    dropdownClassName="!rounded-xl"
-                  >
-                    {cinemaAddresses.map((address) => (
-                      <Option key={address.maCumRap} value={address.diaChi}>
-                        <div className="py-1">
-                          <Text className="text-gray-800">
-                            {address.diaChi}
-                          </Text>
+                      {/* Movie Stats */}
+                      <div className="flex flex-wrap items-center gap-6 mb-6">
+                        <div className="flex items-center gap-2">
+                          <Star
+                            className="text-yellow-400 fill-yellow-400"
+                            size={20}
+                          />
+                          <Rate
+                            disabled
+                            defaultValue={movie.danhGia / 2}
+                            className="!text-yellow-400"
+                          />
+                          <span className="text-xl font-bold">
+                            {movie.danhGia}/10
+                          </span>
                         </div>
-                      </Option>
-                    ))}
-                  </Select>
-                  {!selectedCinema && (
-                    <Text className="text-xs text-gray-500 mt-2 block">
-                      * Chọn rạp để xem danh sách địa chỉ
-                    </Text>
-                  )}
+                        <Divider
+                          type="vertical"
+                          className="!border-white/30 !h-6"
+                        />
+
+                        <div className="flex items-center gap-2">
+                          <Calendar className="text-green-300" size={20} />
+                          <span className="text-lg">
+                            {new Date(movie.ngayKhoiChieu).toLocaleDateString(
+                              "vi-VN"
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div className="mb-6">
+                        <Text className="!text-gray-200 text-lg leading-relaxed line-clamp-4">
+                          {movie.moTa}
+                        </Text>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+
+                    <div className="flex gap-4">
+                      <Button
+                        type="primary"
+                        size="large"
+                        icon={<Play size={20} />}
+                        className="!bg-gradient-to-r !from-red-500 !to-pink-600 !border-0 !h-14 !px-8 !rounded-xl !text-lg font-bold shadow-lg hover:!from-red-600 hover:!to-pink-700 transition-all duration-300 hover:scale-105"
+                      ></Button>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </Card>
+        )}
+
+        {/* Selection Steps */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Step 1: Chọn rạp */}
+          <Card
+            title={
+              <div className="flex items-center gap-3 text-lg font-bold">
+                <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  1
                 </div>
+                <Film size={20} />
+                <span>Chọn rạp chiếu</span>
+              </div>
+            }
+            className="shadow-lg rounded-xl border-l-4 border-l-blue-500 hover:shadow-xl transition-shadow duration-300"
+          >
+            <Space direction="vertical" className="w-full" size="small">
+              {cinemas.map((cinema) => (
+                <Button
+                  key={cinema.maHeThongRap}
+                  block
+                  size="large"
+                  className={`!h-14 !rounded-xl border-2 transition-all duration-300 ${
+                    selectedCinemaId === cinema.maHeThongRap
+                      ? "!bg-blue-500 !text-white !border-blue-500 shadow-lg scale-105"
+                      : "!bg-gray-50 hover:!bg-blue-50 !border-gray-200 hover:!border-blue-300"
+                  }`}
+                  onClick={() => handleSelectCinema(cinema)}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-medium">
+                      <img
+                        src={cinema.logo}
+                        alt={cinema.tenHeThongRap}
+                        className="h-8 w-auto object-contain inline-block"
+                      />{" "}
+                      {cinema.tenHeThongRap}
+                    </span>
 
-                {/* Showtime */}
-                <div className="mb-8">
-                  <Text
-                    strong
-                    className="flex items-center mb-4 text-gray-800 text-lg"
-                  >
-                    <ClockCircleOutlined className="mr-2 text-green-500" />
-                    Suất chiếu
-                  </Text>
-
-                  <div className="grid grid-cols-1 gap-3 max-h-64 overflow-y-auto">
-                    {loadingShowtimes ? (
-                      <div className="text-center py-4">
-                        <Spin size="small" />
-                        <Text type="secondary" className="ml-2">
-                          Đang tải suất chiếu...
-                        </Text>
-                      </div>
-                    ) : showtimes.length > 0 ? (
-                      showtimes.map((showtime, index) => (
-                        <Button
-                          key={`${showtime.ngayChieuGioChieu}-${index}`}
-                          type={
-                            selectedShowtime === showtime.ngayChieuGioChieu
-                              ? "primary"
-                              : "default"
-                          }
-                          size="large"
-                          className={`!h-16 !rounded-xl !font-semibold !transition-all !duration-300 !transform !flex !flex-col !justify-center !items-start !px-4 ${
-                            selectedShowtime === showtime.ngayChieuGioChieu
-                              ? "!bg-gradient-to-r !from-blue-500 !to-purple-600 !shadow-xl !scale-105 hover:!scale-110"
-                              : "!bg-white !border-gray-300 hover:!border-blue-400 hover:!shadow-md hover:!scale-105"
-                          }`}
-                          onClick={() => handleSelectShowtime(showtime)}
-                        >
-                          <div
-                            className={`text-sm font-bold ${
-                              selectedShowtime === showtime.ngayChieuGioChieu
-                                ? "text-white"
-                                : "text-gray-800"
-                            }`}
-                          >
-                            {formatShowtime(showtime.ngayChieuGioChieu)}
-                          </div>
-                          <div
-                            className={`text-xs ${
-                              selectedShowtime === showtime.ngayChieuGioChieu
-                                ? "text-white/90"
-                                : "text-gray-500"
-                            }`}
-                          >
-                            Giá vé: {showtime.giaVe.toLocaleString("vi-VN")} VNĐ
-                          </div>
-                        </Button>
-                      ))
-                    ) : selectedCinema ? (
-                      <div className="text-center py-4">
-                        <Text type="secondary">
-                          Không có suất chiếu cho phim này
-                        </Text>
-                      </div>
-                    ) : (
-                      <div className="text-center py-4">
-                        <Text type="secondary">Chọn rạp để xem suất chiếu</Text>
-                      </div>
+                    {selectedCinemaId === cinema.maHeThongRap && (
+                      <CheckCircle2 size={20} />
                     )}
                   </div>
-                </div>
-
-                <Divider className="!border-gray-200" />
-
-                {/* Total Price */}
-                {/* <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <Text strong className="text-gray-800 text-lg">
-                      Tổng tiền:
-                    </Text>
-                    <Text
-                      strong
-                      className="text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"
-                    >
-                      {(selectedSeats.length * ticketPrice).toLocaleString(
-                        "vi-VN"
-                      )}{" "}
-                      VNĐ
-                    </Text>
-                  </div>
-                  <Text className="text-sm text-gray-600">
-                    {selectedSeats.length} ghế ×{" "}
-                    {ticketPrice.toLocaleString("vi-VN")} VNĐ
-                  </Text>
-                  {selectedShowtime && (
-                    <Text className="text-xs text-blue-600 mt-1 block">
-                      * Giá vé đã bao gồm suất chiếu đã chọn
-                    </Text>
-                  )}
-                </div> */}
-                <div>
-                  {/* Component tổng tiền */}
-                  <TotalPrice
-                    selectedSeats={selectedSeats}
-                    ticketPrice={ticketPrice}
-                    selectedShowtime={selectedShowtime}
-                  />
-                </div>
-
-                {/* Booking Button */}
-                <Button
-                  type="primary"
-                  size="large"
-                  block
-                  className="!h-14 !rounded-2xl !font-bold !text-lg !bg-gradient-to-r !from-purple-600 !to-pink-600 !border-0 !shadow-xl hover:!shadow-2xl !transition-all !duration-300 !transform hover:!scale-105"
-                  onClick={handleBookTicket}
-                  disabled={
-                    !selectedCinema ||
-                    !selectedAddress ||
-                    !selectedShowtime ||
-                    selectedSeats.length === 0
-                  }
-                >
-                  <CheckCircleOutlined className="mr-2" />
-                  Xác Nhận Đặt Vé
                 </Button>
+              ))}
+            </Space>
+          </Card>
 
-                {(!selectedCinema ||
-                  !selectedAddress ||
-                  !selectedShowtime ||
-                  selectedSeats.length === 0) && (
-                  <Text className="text-xs text-gray-500 text-center mt-3 block">
-                    Vui lòng chọn đầy đủ thông tin để tiếp tục
-                  </Text>
-                )}
+          {/* Step 2: Chọn cụm rạp */}
+          <Card
+            title={
+              <div className="flex items-center gap-3 text-lg font-bold">
+                <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  2
+                </div>
+                <MapPin size={20} />
+                <span>Chọn cụm rạp</span>
               </div>
-            </Card>
-          </Col>
-        </Row>
-        <Footer/>
+            }
+            className="shadow-lg rounded-xl border-l-4 border-l-green-500 hover:shadow-xl transition-shadow duration-300"
+          >
+            <Space direction="vertical" className="w-full" size="small">
+              {cinemaAddresses.length > 0 ? (
+                cinemaAddresses.map((cumRap) => (
+                  <Button
+                    key={cumRap.maCumRap}
+                    block
+                    size="large"
+                    className={`!h-auto !min-h-14 !rounded-xl border-2 transition-all duration-300 ${
+                      selectedAddress === cumRap.maCumRap
+                        ? "!bg-green-500 !text-white !border-green-500 shadow-lg scale-105"
+                        : "!bg-gray-50 hover:!bg-green-50 !border-gray-200 hover:!border-green-300"
+                    }`}
+                    onClick={() => handleSelectAddress(cumRap.maCumRap)}
+                  >
+                    <div className="flex items-center justify-between w-full py-2">
+                      <div className="text-left">
+                        <div className="font-medium">{cumRap.tenCumRap}</div>
+                        <div className="text-xs opacity-75">
+                          {cumRap.diaChi}
+                        </div>
+                      </div>
+                      {selectedAddress === cumRap.maCumRap && (
+                        <CheckCircle2 size={20} />
+                      )}
+                    </div>
+                  </Button>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <MapPin size={48} className="mx-auto mb-2 opacity-30" />
+                  <Text type="secondary">Vui lòng chọn rạp trước</Text>
+                </div>
+              )}
+            </Space>
+          </Card>
+
+          {/* Step 3: Chọn suất chiếu */}
+          <Card
+            title={
+              <div className="flex items-center gap-3 text-lg font-bold">
+                <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  3
+                </div>
+                <Clock size={20} />
+                <span>Chọn suất chiếu</span>
+              </div>
+            }
+            className="shadow-lg rounded-xl border-l-4 border-l-purple-500 hover:shadow-xl transition-shadow duration-300"
+          >
+            {showtimes.length > 0 ? (
+              <div className="space-y-6">
+                {Object.entries(
+                  showtimes.reduce((acc, lich) => {
+                    const date = new Date(
+                      lich.ngayChieuGioChieu
+                    ).toLocaleDateString("vi-VN");
+                    if (!acc[date]) acc[date] = [];
+                    acc[date].push(lich);
+                    return acc;
+                  }, {} as Record<string, typeof showtimes>)
+                ).map(([date, lichTrongNgay]) => (
+                  <div key={date}>
+                    {/* Header ngày */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <Clock size={18} className="text-purple-500" />
+                      <span className="font-semibold text-gray-800">
+                        {date}
+                      </span>
+                    </div>
+
+                    {/* Các giờ chiếu */}
+                    <Row gutter={[12, 12]}>
+                      {lichTrongNgay.map((lich) => (
+                        <Col
+                          key={lich.maLichChieu}
+                          xs={12}
+                          sm={8}
+                          md={6}
+                          lg={4}
+                        >
+                          <Button
+                            block
+                            className={`!h-14 !rounded-xl flex flex-col items-center justify-center py-2 transition-all duration-300 font-semibold shadow-lg ${
+                              selectedShowtime === lich.maLichChieu
+                                ? "!bg-purple-500 !text-white !border-purple-500 shadow-lg"
+                                : "!bg-gray-50 hover:!bg-purple-50 !border-gray-200 hover:!border-purple-300"
+                            }`}
+                            onClick={() =>
+                              setSelectedShowtime(lich.maLichChieu)
+                            }
+                          >
+                            <span className="text-base font-bold">
+                              {new Date(
+                                lich.ngayChieuGioChieu
+                              ).toLocaleTimeString("vi-VN", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </Button>
+                        </Col>
+                      ))}
+                    </Row>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <Clock size={48} className="mx-auto mb-2 opacity-30" />
+                <Text type="secondary">Chọn cụm rạp để xem suất chiếu</Text>
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* Seat Selection */}
+        <Card
+          className="mb-8 shadow-lg rounded-xl"
+          title={
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 text-lg font-bold">
+                <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  4
+                </div>
+                <Users size={20} />
+                <span>Chọn ghế ngồi</span>
+              </div>
+              <Badge
+                count={selectedSeats.length}
+                showZero
+                className="!bg-red-500"
+              >
+                <div className="bg-red-100 px-3 py-1 rounded-full">
+                  <span className="text-red-600 font-medium">Đã chọn</span>
+                </div>
+              </Badge>
+            </div>
+          }
+        >
+          {/* Screen */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-gray-800 to-gray-600 text-white text-center py-3 rounded-t-2xl mx-auto max-w-md">
+              <span className="font-bold">Màn hình</span>
+            </div>
+            <div className="h-2 bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 mx-auto max-w-md rounded-b-xl shadow-lg"></div>
+          </div>
+
+          {/* Seats Grid */}
+          <Row gutter={[4, 4]} justify="center">
+            {Array.from({ length: 60 }, (_, i) => {
+              const row = String.fromCharCode(65 + Math.floor(i / 10)); // A, B, C, D, E, F
+              const seat = `${row}${(i % 10) + 1}`;
+              const isSelected = selectedSeats.includes(seat);
+              const isOccupied = Math.random() < 0.1; // 10% ghế đã có người đặt
+
+              return (
+                <Col key={seat} xs={4} sm={3} md={2}>
+                  <Tooltip
+                    title={isOccupied ? "Ghế đã được đặt" : `Ghế ${seat}`}
+                  >
+                    <Button
+                      block
+                      size="small"
+                      disabled={isOccupied}
+                      className={`!h-8 !w-8 !min-w-8 !rounded-lg !p-0 transition-all duration-300 text-xs font-bold ${
+                        isOccupied
+                          ? "!bg-gray-300 !text-gray-500 !cursor-not-allowed"
+                          : isSelected
+                          ? "!bg-red-500 !text-white !border-red-500 shadow-lg scale-110"
+                          : "!bg-green-100 hover:!bg-green-200 !text-green-700 !border-green-300 hover:scale-105"
+                      }`}
+                      onClick={() => !isOccupied && handleSelectSeat(seat)}
+                    >
+                      {seat}
+                    </Button>
+                  </Tooltip>
+                </Col>
+              );
+            })}
+          </Row>
+
+          {/* Seat Legend */}
+          <div className="mt-6 flex justify-center gap-6 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
+              <span className="text-sm">Trống</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-red-500 rounded"></div>
+              <span className="text-sm">Đã chọn</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-gray-300 rounded"></div>
+              <span className="text-sm">Đã đặt</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Booking Summary & Confirmation */}
+        <Card className="shadow-xl rounded-2xl bg-gradient-to-br from-blue-50 via-white to-purple-50 border-0">
+          <div className="text-center space-y-6">
+            {/* Summary */}
+            {(selectedCinema ||
+              selectedAddress ||
+              selectedShowtime ||
+              selectedSeats.length > 0) && (
+              <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center">
+                    <CheckCircle2 size={20} />
+                  </div>
+                  <Title
+                    level={3}
+                    className="!mb-0 !text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+                  >
+                    Thông tin đặt vé
+                  </Title>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {selectedCinema && (
+                    <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Film className="text-blue-600" size={20} />
+                        <span className="font-semibold text-blue-800">
+                          Rạp chiếu
+                        </span>
+                      </div>
+                      <div className="text-gray-800 font-medium text-lg">
+                        {selectedCinema}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedAddress && (
+                    <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+                      <div className="flex items-center gap-3 mb-2">
+                        <MapPin className="text-green-600" size={20} />
+                        <span className="font-semibold text-green-800">
+                          Cụm rạp
+                        </span>
+                      </div>
+                      <div className="text-gray-800 font-medium text-lg">
+                        {getSelectedAddressName()}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedShowtime && (
+                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Clock className="text-purple-600" size={20} />
+                        <span className="font-semibold text-purple-800">
+                          Suất chiếu
+                        </span>
+                      </div>
+                      <div className="text-gray-800 font-medium text-lg">
+                        {getSelectedShowtimeDetails() && (
+                          <>
+                            <div>
+                              {getSelectedShowtimeDetails()!.toLocaleTimeString(
+                                "vi-VN",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {getSelectedShowtimeDetails()!.toLocaleDateString(
+                                "vi-VN",
+                                {
+                                  weekday: "long",
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                }
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedSeats.length > 0 && (
+                    <div className="bg-gradient-to-r from-red-50 to-red-100 p-4 rounded-xl border border-red-200">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Users className="text-red-600" size={20} />
+                        <span className="font-semibold text-red-800">
+                          Ghế đã chọn
+                        </span>
+                      </div>
+                      <div className="text-gray-800 font-medium text-lg">
+                        <Badge count={selectedSeats.length} className="mr-2">
+                          <span>{selectedSeats.join(", ")}</span>
+                        </Badge>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Confirm Button */}
+            <div className="pt-4">
+              <Button
+                type="primary"
+                size="large"
+                className={`!h-16 !rounded-2xl !px-12 !text-xl font-bold shadow-2xl transition-all duration-300 ${
+                  selectedCinema &&
+                  selectedAddress &&
+                  selectedShowtime &&
+                  selectedSeats.length > 0
+                    ? "!bg-gradient-to-r !from-blue-500 !to-purple-600 hover:!from-blue-600 hover:!to-purple-700 hover:scale-105 hover:shadow-2xl"
+                    : ""
+                }`}
+                onClick={handleBookTicket}
+                icon={<CheckCircle2 size={24} />}
+              >
+                Xác nhận đặt vé
+                {selectedSeats.length > 0 && (
+                  <Badge count={selectedSeats.length} className="ml-3" />
+                )}
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
+      <Footer />
     </div>
   );
 }

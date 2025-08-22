@@ -58,7 +58,7 @@ export default function HeadderInfo() {
             <Image
               src={movieData.hinhAnh}
               alt={movieData.tenPhim}
-              className="w-full h-64 object-cover"
+              className="w-full h-full object-cover"
               preview={false}
               fallback="https://via.placeholder.com/600x400?text=No+Image"
             />

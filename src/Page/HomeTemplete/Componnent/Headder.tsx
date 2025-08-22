@@ -257,7 +257,7 @@ export default function Header() {
 
     {/* User Actions Footer */}
     {user && (
-      <div className="absolute bottom-100 left-0 right-0 z-20 px-5 py-4 bg-white/80 backdrop-blur-md border-t border-gray-200/60 shadow-lg">
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-5 py-4 bg-white/80 backdrop-blur-md border-t border-gray-200/60 shadow-lg">
         <Button
           type="text"
           icon={<LogOut className="h-4 w-4" />}

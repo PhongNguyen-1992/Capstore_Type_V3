@@ -1,17 +1,8 @@
-export interface Rap {
-    maHeThongRap:  string;
-    tenHeThongRap: string;
-    biDanh:        string;
-    logo:          string;}
-
-
-export interface LichChieuPhim {
-    maLichChieu:       string;
-    maRap:             string;
-    tenRap:            string;
-    ngayChieuGioChieu: Date;
-    giaVe:             number;
-    thoiLuong:         number;
+export interface HeThongRap {
+  cumRapChieu: CumRap[];
+  maHeThongRap: string;
+  tenHeThongRap: string;
+  logo: string;
 }
 
 export interface CumRap {
@@ -22,12 +13,20 @@ export interface CumRap {
   diaChi: string;
 }
 
-export interface HeThongRap {
-  cumRapChieu: CumRap[];
-  maHeThongRap: string;
-  tenHeThongRap: string;
-  logo: string;
+export interface LichChieuPhim {
+    maLichChieu:       string;
+    maRap:             string;
+    tenRap:            string;
+    ngayChieuGioChieu: Date;
+    giaVe:             number;
+    thoiLuong:         number;
 }
+
+export interface MovieShowtime {
+  heThongRapChieu: HeThongRap[];
+}
+
+
 
 export interface LichChieuPhimResponse {
   heThongRapChieu: HeThongRap[];
@@ -44,22 +43,4 @@ export interface LichChieuPhimResponse {
   ngayKhoiChieu: string;
   danhGia: number;
 }
-export interface MovieShowtime {
-  maPhim: number;
-  tenPhim: string;
-  hinhAnh: string;
-  moTa: string;
-  heThongRapChieu: any[]; 
-}
-export interface LstLichChieuTheoPhim {
-    maLichChieu:       number;
-    maRap:             string;
-    tenRap:            string;
-    ngayChieuGioChieu: Date;
-    giaVe:             number;
-}
 
-export interface SuatChieu {
-  ngayChieuGioChieu: string;
-  giaVe: number;
-}
