@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input, InputNumber, Card, Select } from "antd";
+import { Button, Form, Input, Card, Select } from "antd";
 
 const validateMessages = {
   required: "${label} không được để trống!",
