@@ -20,6 +20,7 @@ const { Title, Text } = Typography;
 const MovieSection: FC<MovieSectionProps> = ({ title, movies, icon }) => {
   const carouselRef = useRef<any>(null);
 
+  // Cấu hình setting show Movie
   const settings = {
     dots: false,
     infinite: false,
@@ -155,7 +156,7 @@ export default function MovieList() {
     );
   }
 
-  // Filter movies by status
+  // Filter movies
   const dangChieuMovies = data.filter((movie) => movie.dangChieu);
   const sapChieuMovies = data.filter((movie) => movie.sapChieu);
   const ngungChieuMovies = data.filter(
@@ -202,15 +203,12 @@ export default function MovieList() {
         />
 
         {/* Phim Sắp Chiếu */}
-        <MovieSection
+       <MovieSection
           title="Phim Sắp Chiếu"
           movies={sapChieuMovies}
           icon={
-            <div
-              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 
-      bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg"
-            >
-              <Clock className="w-4 h-4 sm:w-6 sm:h-6 text-white fill-white" />
+            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl shadow-lg">
+              <Clock className="w-6 h-6 text-white" />
             </div>
           }
         />

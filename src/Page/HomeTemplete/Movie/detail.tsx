@@ -5,17 +5,28 @@ import { Calendar, Film, Clock, AlertCircle, Play, Ticket, Star} from "lucide-re
 import { getMovieDetailsAPI } from "../../../service/movie.api";
 import Header from "../Componnent/Headder";
 import Footer from "../Componnent/Footer";
+import { userAuthStore } from "@/store";
+import { message } from "antd";
 
 export default function MovieDetail() {
   const { movieID } = useParams();
   const navigate = useNavigate();
+  const {user} = userAuthStore()
 
-  const handleBooking = () => {
-  if (data?.maPhim) {
-    navigate(`/TicketBooking/${data.maPhim}`);
+const handleBooking = (movie: any) => { 
+  if (!user) {
+    message.warning("Vui lòng đăng nhập để đặt vé!");    
+    setTimeout(() => {
+      navigate("/auth/login", { 
+        state: { from: { pathname: `/TicketBooking/${movie.maPhim}` } }
+      });
+    }, 1500);
+    return;
   }
-};
-
+  
+  // Logic chuyển trang khi đã đăng nhập
+  navigate(`/TicketBooking/${movie.maPhim}`);
+}
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["movie-detail", movieID],
@@ -133,7 +144,7 @@ export default function MovieDetail() {
                     {/* Action Buttons */}
                     <div className="flex gap-3 lg:flex-col xl:flex-row">
                       <button 
-                        onClick={handleBooking}
+                        onClick={()=>{handleBooking(data)}}
                         className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         <Ticket className="h-5 w-5" />
