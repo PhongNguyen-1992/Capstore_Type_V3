@@ -1,5 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { userAuthStore } from "../../store";
+import Header from "../HomeTemplete/Componnent/Headder";
+import Footer from "../HomeTemplete/Componnent/Footer";
 export default function AuthTemplte() {
   // Check Người Dùng Chuyển Trang
   const { user } = userAuthStore();
@@ -11,8 +13,10 @@ export default function AuthTemplte() {
   }
 
   return (
-    <div>     
+    <div>
+      <Header/>
       <Outlet />     
+      <Footer/>
     </div>
   );
 }

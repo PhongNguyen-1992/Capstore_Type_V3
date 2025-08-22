@@ -1,17 +1,11 @@
 import { Alert, Flex, Spin } from "antd";
-import {
-  lazy,
-  Suspense,  
-  type FC,
-  type LazyExoticComponent,
-} from "react";
+import { lazy, Suspense, type FC, type LazyExoticComponent } from "react";
 import { type RouteObject } from "react-router-dom";
-
-
 
 // Lazy load các trang
 const Homepage = lazy(() => import("../Page/HomeTemplete/index"));
 const Login = lazy(() => import("../Page/AuthTemplete/Login"));
+const Register = lazy(() => import("../Page/AuthTemplete/Register"));
 const Auth = lazy(() => import("../Page/AuthTemplete"));
 const MovieDetail = lazy(() => import("../Page/HomeTemplete/Movie/detail"));
 const TicketBooking = lazy(() => import("../Page/HomeTemplete/TicketBooking"));
@@ -58,13 +52,16 @@ export const router: RouteObject[] = [
     path: "movie-detail/:movieID",
     element: withSuspense(MovieDetail),
   },
- {
-  path: "TicketBooking/:movieID",
-  element: withSuspense(TicketBooking),
-},
+  {
+    path: "TicketBooking/:movieID",
+    element: withSuspense(TicketBooking),
+  },
   {
     path: "/auth",
     element: withSuspense(Auth),
-    children: [{ path: "login", element: withSuspense(Login) }],
+    children: [
+      { path: "login", element: withSuspense(Login) },
+      { path: "register", element: withSuspense(Register) },
+    ],
   },
 ];

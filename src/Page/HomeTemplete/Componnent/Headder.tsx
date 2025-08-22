@@ -1,5 +1,5 @@
 import { Button, Drawer, Avatar, Input } from "antd";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Menu, X, Home, Film, User, LogIn, Search, LogOut } from "lucide-react";
 import { userAuthStore } from "../../../store";
 import { useEffect, useState } from "react";
@@ -18,11 +18,6 @@ export default function Header() {
   const { user, clearUser } = userAuthStore((state: any) => state);
   const handleLogout = () => {
     clearUser();
-  };
-
-  const navigate = useNavigate();
-  const handleLogin = () => {
-    navigate("auth/login");
   };
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -96,14 +91,15 @@ export default function Header() {
                   </div>
                 </div>
               ) : (
-                <Button
-                  onClick={handleLogin}
-                  type="primary"
-                  icon={<LogIn className="h-4 w-4" />}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  Đăng Nhập
-                </Button>
+                <NavLink to="/auth/login" className="text-white font-semibold">
+                  <Button
+                    type="primary"
+                    icon={<LogIn className="h-4 w-4" />}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 border-0 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Đăng Nhập
+                  </Button>
+                </NavLink>
               )}
 
               <Button
@@ -145,17 +141,18 @@ export default function Header() {
           ) : (
             <div className="p-4 bg-gray-50 rounded-lg text-center">
               <p className="text-gray-600 mb-3">Chưa đăng nhập</p>
-              <Button
-                onClick={() => {
-                  handleLogin();
-                  closeDrawer();
-                }}
-                type="primary"
-                icon={<LogIn className="h-4 w-4" />}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 border-0"
-              >
-                Đăng Nhập
-              </Button>
+              <NavLink to="/auth/login" className="text-white font-semibold">
+                <Button
+                  onClick={() => {
+                    closeDrawer();
+                  }}
+                  type="primary"
+                  icon={<LogIn className="h-4 w-4" />}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 border-0"
+                >
+                  Đăng Nhập
+                </Button>
+              </NavLink>
             </div>
           )}
 

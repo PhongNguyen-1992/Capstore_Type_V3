@@ -34,6 +34,7 @@ import MovieBookingHeader from "../Componnent/hearderBooking";
 import RenderSeats from "./Seat/Seat";
 import TotalPrice from "./Pay/TotalPrice";
 import HeadderInfo from "./Bookking/Info";
+import Footer from "../Componnent/Footer";
 
 // Interface cho suất chiếu mới
 
@@ -243,7 +244,7 @@ export default function TicketBooking() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-8">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px- space-y-16">
         <div className="mb-6">
           <MovieBookingHeader />
         </div>
@@ -531,6 +532,7 @@ export default function TicketBooking() {
             </Card>
           </Col>
         </Row>
+        <Footer/>
       </div>
     </div>
   );

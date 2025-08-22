@@ -61,11 +61,12 @@ const MovieSection: FC<MovieSectionProps> = ({ title, movies, icon }) => {
           <Title level={2} className="!m-0 !text-white !font-bold text-2xl">
             {title}
           </Title>
-          <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 px-4 py-2 rounded-full">
-            <Text className="!text-white font-medium text-sm">
-              {movies.length} Fimls
-            </Text>
-          </div>
+        <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 px-3 sm:px-4 py-1 sm:py-2 rounded-full">
+  <Text className="!text-white font-medium text-xs sm:text-sm">
+    {movies.length}
+  </Text>
+</div>
+
         </div>
 
         <div className="flex gap-3">
@@ -167,11 +168,16 @@ export default function MovieList() {
 
       <div className="max-w-screen-2xl mx-auto relative z-10">
         {/* Header */}
+        {/* Header */}
         <div className="text-center mb-16 px-6">
-          <Title level={1} className="!text-white !font-bold !text-5xl !mb-4">
+          <Title
+            level={1}
+            className="!text-white !font-bold !mb-4
+      text-3xl sm:text-4xl md:text-5xl"
+          >
             Cinema Collection
           </Title>
-          <Text className="text-gray-400 text-lg">
+          <Text className="text-gray-400 text-base sm:text-lg md:text-lg">
             Khám phá thế giới điện ảnh tuyệt vời
           </Text>
         </div>
@@ -181,8 +187,11 @@ export default function MovieList() {
           title="Phim Đang Chiếu"
           movies={dangChieuMovies}
           icon={
-            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg">
-              <Play className="w-6 h-6 text-white fill-white" />
+            <div
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 
+      bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg"
+            >
+              <Play className="w-4 h-4 sm:w-6 sm:h-6 text-white fill-white" />
             </div>
           }
         />
@@ -192,8 +201,11 @@ export default function MovieList() {
           title="Phim Sắp Chiếu"
           movies={sapChieuMovies}
           icon={
-            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl shadow-lg">
-              <Clock className="w-6 h-6 text-white" />
+            <div
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 
+      bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg"
+            >
+              <Clock className="w-4 h-4 sm:w-6 sm:h-6 text-white fill-white" />
             </div>
           }
         />
@@ -203,8 +215,11 @@ export default function MovieList() {
           title="Phim Ngừng Chiếu"
           movies={ngungChieuMovies}
           icon={
-            <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-500 rounded-xl shadow-lg">
-              <StopCircle className="w-6 h-6 text-white" />
+            <div
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 
+      bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg"
+            >
+              <StopCircle className="w-4 h-4 sm:w-6 sm:h-6 text-white fill-white" />
             </div>
           }
         />

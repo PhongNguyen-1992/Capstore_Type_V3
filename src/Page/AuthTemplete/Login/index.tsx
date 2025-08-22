@@ -2,12 +2,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Card, message } from "antd";
 import {
   User,
   Lock, 
-  Film,
   ArrowRight, 
   AlertCircle,
   Loader2,
@@ -16,6 +15,7 @@ import { loginAPI } from "../../../service/auth.api";
 import { userAuthStore } from "../../../store";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
+
 
 const schema = z.object({
   taiKhoan: z.string().nonempty("Tài Khoản Không Được Bỏ Trống"),
@@ -55,17 +55,17 @@ export default function LoginPage() {
   const onSubmit = (data: LoginFormInputs) => {
     handleLogin(data);
   };
+ 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+    <div className=" bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center p-100">
       <div className="max-w-md w-full">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg transform hover:scale-105 transition-transform duration-300">
-            <Film className="h-8 w-8 text-white" />
-          </div>
+        <div className="text-center mb-8">        
+                    
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            PANDA CINEMA
+           Login
           </h1>
           <p className="text-gray-600">
             Chào mừng trở lại! Đăng nhập để tiếp tục
@@ -164,16 +164,17 @@ export default function LoginPage() {
             <div className="text-center mt-8 pt-6 border-t border-gray-100">
               <p className="text-gray-600">
                 Chưa có tài khoản?{" "}
-                <a
-                  href="/register"
+                <NavLink
+                 to="/auth/register"
                   className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
                 >
                   Đăng ký ngay
-                </a>
+                </NavLink>
               </p>
             </div>
           </div>
         </Card>
+      </div>
       </div>
     </div>
   );
