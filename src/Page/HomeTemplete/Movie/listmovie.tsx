@@ -61,12 +61,11 @@ const MovieSection: FC<MovieSectionProps> = ({ title, movies, icon }) => {
           <Title level={2} className="!m-0 !text-white !font-bold text-2xl">
             {title}
           </Title>
-        <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 px-3 sm:px-4 py-1 sm:py-2 rounded-full">
-  <Text className="!text-white font-medium text-xs sm:text-sm">
-    {movies.length}
-  </Text>
-</div>
-
+          <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 px-3 sm:px-4 py-1 sm:py-2 rounded-full">
+            <Text className="!text-white font-medium text-xs sm:text-sm">
+              {movies.length}
+            </Text>
+          </div>
         </div>
 
         <div className="flex gap-3">
@@ -95,7 +94,13 @@ const MovieSection: FC<MovieSectionProps> = ({ title, movies, icon }) => {
         </div>
       </div>
 
-      <Carousel ref={carouselRef} {...settings} className="movie-carousel">
+      <Carousel
+        ref={carouselRef}
+        {...settings}
+        className="movie-carousel"
+        swipeToSlide
+        draggable
+      >
         {movies.map((movie) => (
           <div key={movie.maPhim} className="px-3">
             <MovieCard movie={movie} />
