@@ -69,13 +69,13 @@ export default function Header() {
 
             {/* Right Section */}
             <div className="flex items-center gap-3">
-              <div className="hidden md:block w-64">
+              {/* <div className="hidden md:block w-64">
                 <Input
                   placeholder="Nhập Tên Phim..."
                   prefix={<Search className="h-4 w-4 text-gray-400" />}
                   className="bg-gray-800 text-white border-gray-700 placeholder-gray-400"
                 />
-              </div>
+              </div> */}
               {user ? (
                 <div className="flex items-center gap-3">
                   <Avatar
