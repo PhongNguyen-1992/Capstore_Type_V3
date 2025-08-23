@@ -3,6 +3,7 @@ import { Button, Layout, Menu, theme } from "antd";
 import {
   ChevronsLeft,
   ChevronsRight,
+  CircleSlash,
   Contact,
   Film,
   Users,
@@ -14,6 +15,7 @@ import {
   ProfileManagement,
   FilmsManagement,
   CinemasManagement,
+  Dashboard,
 } from "./Content/_index";
 import { useNavigate } from "react-router-dom";
 
@@ -61,10 +63,11 @@ const App: React.FC = () => {
           mode="inline"
           defaultSelectedKeys={["1"]}
           items={[
-            { key: "1", icon: <Contact />, label: "Profile" },
-            { key: "2", icon: <Users />, label: "Users Management" },
-            { key: "3", icon: <Film />, label: "Films Management" },
-            { key: "4", icon: <Warehouse />, label: "Cinemas Management" },
+            { key: "1", icon: <CircleSlash />, label: "Dashboard" },
+            { key: "2", icon: <Contact />, label: "Profile" },
+            { key: "3", icon: <Users />, label: "Users Management" },
+            { key: "4", icon: <Film />, label: "Films Management" },
+            { key: "5", icon: <Warehouse />, label: "Cinemas Management" },
           ]}
         />
 
@@ -110,10 +113,11 @@ const App: React.FC = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          {selectedKey === "1" && <ProfileManagement />}
-          {selectedKey === "2" && <UsersManagement />}
-          {selectedKey === "3" && <FilmsManagement />}
-          {selectedKey === "4" && <CinemasManagement />}
+          {selectedKey === "1" && <Dashboard />}
+          {selectedKey === "2" && <ProfileManagement />}
+          {selectedKey === "3" && <UsersManagement />}
+          {selectedKey === "4" && <FilmsManagement />}
+          {selectedKey === "5" && <CinemasManagement />}
         </Content>
       </Layout>
     </Layout>
