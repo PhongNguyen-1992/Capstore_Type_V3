@@ -19,6 +19,8 @@ export const loginAPI = async (data: loginDataRequest) => {
   }
 };
 
+
+
 export const registerUser = async (
   registerData: Register
 ): Promise<Register> => {

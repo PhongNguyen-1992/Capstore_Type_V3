@@ -1,8 +1,7 @@
-
 export default function CinemasManagement() {
   return (
     <div>
-      Cinemas Page
+      CinemasManagement Page
     </div>
   )
 }
