@@ -173,7 +173,7 @@ export default function MovieList() {
       </div>
 
       {/* Inline styles carousel */}
-      <style
+      {/* <style
         dangerouslySetInnerHTML={{
           __html: `
             .movie-carousel .slick-track { display: flex; align-items: stretch; }
@@ -186,7 +186,7 @@ export default function MovieList() {
             ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
           `,
         }}
-      />
+      /> */}
     </div>
   );
 }

@@ -13,7 +13,7 @@ export default function AuthTemplte() {
   }
 
   return (
-    <div>
+    <div className=" min-h-screen">
       <Header/>
       <Outlet />     
       <Footer/>
