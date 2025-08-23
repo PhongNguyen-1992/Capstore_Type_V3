@@ -4,9 +4,6 @@ import { Menu, X, Home, Film, User, LogIn, Search, LogOut } from "lucide-react";
 import { userAuthStore } from "../../../store";
 import { useEffect, useState } from "react";
 import PandaLogo from "./Logo";
-import type { Movie } from "@/interfaces/movie.interface";
-import { getListMovie } from "@/service/movie.api";
-
 export default function Header() {
   const [isMdUp, setIsMdUp] = useState(false);
 // API gọi user

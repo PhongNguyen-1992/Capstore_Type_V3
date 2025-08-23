@@ -7,8 +7,7 @@ import { Card, Button, Input, Form, message, Space, Typography, Divider } from "
 import {
   User,
   Lock, 
-  ArrowRight, 
-  AlertCircle,
+  ArrowRight,   
   Loader2,
   Eye,
   EyeOff
@@ -58,11 +57,9 @@ export default function LoginPage() {
   });
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch
+   
+    formState:{},
+    
   } = useForm<LoginFormInputs>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -71,9 +68,6 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = (data: LoginFormInputs) => {
-    handleLogin(data);
-  };
 
   const onFinish = (values: any) => {
     handleLogin(values);
