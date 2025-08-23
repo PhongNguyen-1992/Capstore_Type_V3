@@ -284,7 +284,9 @@ export default function TicketBooking() {
                         alt={cinema.tenHeThongRap}
                         className="h-8 w-auto object-contain inline-block"
                       />{" "}
-                      {cinema.tenHeThongRap}
+                      {cinema.tenHeThongRap.toLowerCase() === "cgv"
+                        ? "CGV"
+                        : cinema.tenHeThongRap}
                     </span>
 
                     {selectedCinemaId === cinema.maHeThongRap && (
@@ -323,15 +325,25 @@ export default function TicketBooking() {
                     }`}
                     onClick={() => handleSelectAddress(cumRap.maCumRap)}
                   >
-                    <div className="flex items-center justify-between w-full py-2">
-                      <div className="text-left">
-                        <div className="font-medium">{cumRap.tenCumRap}</div>
-                        <div className="text-xs opacity-75">
+                    <div className="flex items-start justify-between w-full py-2">
+                      <div className="flex-1 min-w-0">
+                        {/* Tên cụm rạp */}
+                        <div className="font-medium text-gray-800 truncate">
+                          {cumRap.tenCumRap}
+                        </div>
+
+                        {/* Địa chỉ */}
+                        <div className="text-xs text-gray-500 mt-1 break-words">
                           {cumRap.diaChi}
                         </div>
                       </div>
+
+                      {/* Icon đánh dấu nếu được chọn */}
                       {selectedAddress === cumRap.maCumRap && (
-                        <CheckCircle2 size={20} />
+                        <CheckCircle2
+                          size={20}
+                          className="text-green-500 flex-shrink-0 ml-2"
+                        />
                       )}
                     </div>
                   </Button>

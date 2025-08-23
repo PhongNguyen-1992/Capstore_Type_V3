@@ -4,10 +4,12 @@ import { Menu, X, Home, Film, User, LogIn, Search, LogOut } from "lucide-react";
 import { userAuthStore } from "../../../store";
 import { useEffect, useState } from "react";
 import PandaLogo from "./Logo";
+import type { Movie } from "@/interfaces/movie.interface";
+import { getListMovie } from "@/service/movie.api";
 
 export default function Header() {
   const [isMdUp, setIsMdUp] = useState(false);
-
+// API gọi user
   useEffect(() => {
     const handleResize = () => setIsMdUp(window.innerWidth >= 768);
     handleResize();
@@ -19,13 +21,14 @@ export default function Header() {
   const handleLogout = () => {
     clearUser();
   };
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
+// Navigate chuyển trang
   const navigationItems = [
     { to: "/", label: "Trang Chủ", icon: Home },
     { to: "/", label: "Phim", icon: Film },
   ];
 
+  // Hàm gọi Drawer. Mặc định ẩn
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const showDrawer = () => setIsDrawerOpen(true);
   const closeDrawer = () => setIsDrawerOpen(false);
 
@@ -38,6 +41,9 @@ export default function Header() {
       onClick: handleLogout,
     },
   ];
+
+  // Xử lý seachphim
+
 
   return (
     <>
@@ -75,6 +81,7 @@ export default function Header() {
                   );
                 })}
               </nav>
+
             </div>
 
             {/* Right Section */}
