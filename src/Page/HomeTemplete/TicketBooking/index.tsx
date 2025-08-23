@@ -33,8 +33,8 @@ import type {
   LichChieuPhim,
 } from "@/interfaces/rap.interface";
 import type { Movie } from "@/interfaces/movie.interface";
-import MovieBookingHeader from "../Componnent/hearderBooking";
-import Footer from "../Componnent/Footer";
+import MovieBookingHeader from "../../Componnent/hearderBooking";
+import Footer from "../../Componnent/Footer";
 
 const { Title, Text } = Typography;
 

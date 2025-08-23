@@ -3,8 +3,8 @@ import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Film, Clock, AlertCircle, Play, Ticket, Star} from "lucide-react";
 import { getMovieDetailsAPI } from "../../../service/movie.api";
-import Header from "../Componnent/Headder";
-import Footer from "../Componnent/Footer";
+import Header from "../../Componnent/Headder";
+import Footer from "../../Componnent/Footer";
 import { userAuthStore } from "@/store";
 import { message } from "antd";
 

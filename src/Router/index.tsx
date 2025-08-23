@@ -4,6 +4,7 @@ import { type RouteObject } from "react-router-dom";
 
 // Lazy load các trang
 const Homepage = lazy(() => import("../Page/HomeTemplete/index"));
+const Adminpage = lazy(()=> import("../Page/AdminTemplete"))
 const Login = lazy(() => import("../Page/AuthTemplete/Login"));
 const Register = lazy(() => import("../Page/AuthTemplete/Register"));
 const Auth = lazy(() => import("../Page/AuthTemplete"));
@@ -63,5 +64,9 @@ export const router: RouteObject[] = [
       { path: "login", element: withSuspense(Login) },
       { path: "register", element: withSuspense(Register) },
     ],
+  },
+   {
+    path: "/admin",
+    element: withSuspense(Adminpage),
   },
 ];

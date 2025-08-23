@@ -6,9 +6,9 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious
-} from "../../../components/ui/carousel"
-import { getListBanner } from "../../../service/movie.api"
-import type { Banner } from "../../../interfaces/movie.interface"
+} from "../../components/ui/carousel"
+import { getListBanner } from "../../service/movie.api"
+import type { Banner } from "../../interfaces/movie.interface"
 
 export function Example() {
   const [banners, setBanners] = useState<Banner[]>([])

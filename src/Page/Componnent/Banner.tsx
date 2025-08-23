@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getListBanner } from "../../../service/movie.api";
+import { getListBanner } from "../../service/movie.api";
 
 export default function Banner() {
   const {

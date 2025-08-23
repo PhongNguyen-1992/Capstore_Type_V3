@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { userAuthStore } from "../../store";
-import Header from "../HomeTemplete/Componnent/Headder";
-import Footer from "../HomeTemplete/Componnent/Footer";
+import Header from "../Componnent/Headder";
+import Footer from "../Componnent/Footer";
 export default function AuthTemplte() {
   // Check Người Dùng Chuyển Trang
   const { user } = userAuthStore();

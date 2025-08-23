@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Spin, Flex } from "antd";
-import Headder from "./Componnent/Headder";
-import { Example } from "./Componnent/Carousel";
+import Headder from "../Componnent/Headder";
+import { Example } from "../Componnent/Carousel";
 import MovieList from "./Movie/listmovie";
-import Footer from "./Componnent/Footer";
+import Footer from "../Componnent/Footer";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
