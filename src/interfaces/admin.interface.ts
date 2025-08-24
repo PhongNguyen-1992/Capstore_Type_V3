@@ -38,3 +38,19 @@ export interface PaginatedMovieResponse {
   totalCount: number;
   items: Movie[];
 }
+
+//Addmovie
+export interface MovieFormData {
+  maPhim?: number;
+  tenPhim: string;
+  biDanh: string;
+  trailer: string;
+  moTa: string;
+  maNhom?: string;          // Ví dụ: GP01
+  ngayKhoiChieu: string;   // dạng DD/MM/YYYY
+  dangChieu: boolean;
+  sapChieu: boolean;
+  hot: boolean;
+  danhGia: number;
+  hinhAnh: File | null;
+}
