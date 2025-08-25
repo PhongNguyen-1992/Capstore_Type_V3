@@ -22,13 +22,13 @@ import {
   updateMovieAPI,
   deleteMovieAPI,
   getMoviePaginatedAPI,
-  addMovieAPI,
+  
 } from "@/service/admin.api";
 import type { Movie } from "@/interfaces/movie.interface";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import type { MovieFormData } from "@/interfaces/admin.interface";
+
 
 dayjs.extend(isSameOrBefore);
 
@@ -316,7 +316,7 @@ const FilmsManage: React.FC = () => {
   };
 
   // Watch ngayKhoiChieu changes to auto-update status
-  const handleDateChange = (date: any, dateString: string) => {
+  const handleDateChange = (date: any) => {
     if (date) {
       const status = getMovieStatus(date);
       form.setFieldsValue({
@@ -541,7 +541,7 @@ const FilmsManage: React.FC = () => {
               className="w-full rounded-lg"
               size="large"
               placeholder="Chọn ngày..."
-              onChange={handleDateChange}
+             onChange={handleDateChange}
             />
           </Form.Item>
         </Col>
