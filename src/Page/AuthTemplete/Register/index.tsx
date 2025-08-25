@@ -12,7 +12,8 @@ import {
   EyeOff,
 } from "lucide-react";
 import type { Register } from "@/interfaces/auth.interface";
-import { registerUser } from "../../../service/auth.api"; // Import API thật
+import { registerUser } from "@/service/auth.api";
+
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<Register>({

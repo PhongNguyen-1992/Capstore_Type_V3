@@ -4,22 +4,12 @@ export interface ProfileAdmin {
   email: string;
   hoTen: string;
   maLoaiNguoiDung: string;
-  maNhom: string; 
+  maNhom: string;
   taiKhoan: string;
-  matKhau:string
-  soDT:string
+  matKhau: string;
+  soDT: string;
 }
 
-
-export interface ProfileUser {
-  email: string;
-  hoTen: string;
-  maLoaiNguoiDung: string;
-  maNhom: string; 
-  taiKhoan: string;
-  matKhau:string
-  soDT:string
-} 
 
 //Phân Trang User
 export interface PaginatedUserResponse {
@@ -31,7 +21,7 @@ export interface PaginatedUserResponse {
 }
 
 //Phân Trang Movie
-export interface PaginatedMovieResponse { 
+export interface PaginatedMovieResponse {
   currentPage: number;
   count: number;
   totalPages: number;
@@ -39,18 +29,4 @@ export interface PaginatedMovieResponse {
   items: Movie[];
 }
 
-//Addmovie
-export interface MovieFormData {
-  maPhim?: number;
-  tenPhim: string;
-  biDanh: string;
-  trailer: string;
-  moTa: string;
-  maNhom?: string;          // Ví dụ: GP01
-  ngayKhoiChieu: string;   // dạng DD/MM/YYYY
-  dangChieu: boolean;
-  sapChieu: boolean;
-  hot: boolean;
-  danhGia: number;
-  hinhAnh: File | null;
-}
+

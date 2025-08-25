@@ -1,12 +1,12 @@
 import api from "./api";
 import type { BaseAPIResponse } from "@/interfaces/base.interface";
-import type {
-  MovieFormData,
+import type {   
   PaginatedMovieResponse,
   PaginatedUserResponse,
-  ProfileAdmin,
-  ProfileUser,
+  ProfileAdmin,  
 } from "@/interfaces/admin.interface";
+import type { loginDataRequest } from "@/interfaces/auth.interface";
+import type { Movie } from "@/interfaces/movie.interface";
 
 // Lấy danh sách admin
 export const getAdminProfileAPI = async (
@@ -52,77 +52,71 @@ export const getMoviePaginatedAPI = async (
   return response.data.content;
 };
 
+// seach full trang
+export const searchUsersAPI = async (
+  tuKhoa: string,
+  maNhom: string = "GP00",
+  soTrang: number = 1,
+  soPhanTuTrenTrang: number = 10
+) => {
+  const response = await api.get<BaseAPIResponse<PaginatedUserResponse>>(
+    "/QuanLyNguoiDung/TimKiemNguoiDungPhanTrang",
+    { params: { MaNhom: maNhom, tuKhoa, soTrang, soPhanTuTrenTrang } }
+  );
+  return response.data.content;
+};
+// Đếm full danh sách user
+export const getAllUsersAPI = async (maNhom: string = "GP00") => {
+  const response = await api.get<BaseAPIResponse<ProfileAdmin[]>>(
+    "/QuanLyNguoiDung/LayDanhSachNguoiDung",
+    { params: { MaNhom: maNhom } }
+  );
+  return response.data.content;
+};
+
 // Thêm phim
-export const addMovieAPI = async (data: MovieFormData): Promise<any> => {
-  const formData = new FormData();
-  formData.append("tenPhim", data.tenPhim);
-  formData.append("biDanh", data.biDanh);
-  formData.append("trailer", data.trailer);
-  formData.append("moTa", data.moTa);
-  formData.append("ngayKhoiChieu", data.ngayKhoiChieu);
-  formData.append("danhGia", String(data.danhGia));
-  formData.append("dangChieu", String(data.dangChieu));
-  formData.append("sapChieu", String(data.sapChieu));
-  formData.append("hot", String(data.hot));
-  formData.append("maNhom", "GP01");
-  if (data.hinhAnh) {
-    formData.append("File", data.hinhAnh, data.hinhAnh.name);
-  }
 
-  const response = await api.post<BaseAPIResponse<any>>(
-    `/QuanLyPhim/ThemPhimUploadHinh`,
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
-  return response.data.content;
-};
+// Cập nhật phim
 
-// Xóa phim
-export const deleteMovieAPI = async (maPhim: number): Promise<any> => {
-  const response = await api.delete<BaseAPIResponse<any>>(
-    `/QuanLyPhim/XoaPhim`,
-    { params: { MaPhim: maPhim } }
-  );
-  return response.data.content;
-};
-
-// Cập nhật phim
-export const updateMovieAPI = async (data: MovieFormData): Promise<any> => {
-  const formData = new FormData();
-  if (data.maPhim) {
-    formData.append("maPhim", String(data.maPhim));
-  }
-  formData.append("tenPhim", data.tenPhim);
-  formData.append("biDanh", data.biDanh);
-  formData.append("trailer", data.trailer);
-  formData.append("moTa", data.moTa);
-  formData.append("ngayKhoiChieu", data.ngayKhoiChieu);
-  formData.append("danhGia", String(data.danhGia));
-  formData.append("dangChieu", String(data.dangChieu));
-  formData.append("sapChieu", String(data.sapChieu));
-  formData.append("hot", String(data.hot));
-  formData.append("maNhom", "GP01");
-  if (data.hinhAnh) {
-    formData.append("File", data.hinhAnh, data.hinhAnh.name);
-  }
-
-  const response = await api.post<BaseAPIResponse<any>>(
+export const updateMovieAPI = async (formData: FormData): Promise<Movie> => {
+  const response = await api.post<BaseAPIResponse<Movie>>(
     `/QuanLyPhim/CapNhatPhimUpload`,
     formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
-  return response.data.content;
-};
-
-export const addUserAPI = async (data: ProfileUser): Promise<any> => {
-  const response = await api.post<BaseAPIResponse<any>>(
-    `/QuanLyNguoiDung/ThemNguoiDung`,
-    data, // API này nhận JSON, không cần FormData
     {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
     }
   );
   return response.data.content;
+};
+
+/**
+ * API: Xoá phim theo mã phim
+ */
+export const deleteMovieAPI = async (maPhim: number): Promise<any> => {
+  const response = await api.delete<BaseAPIResponse<any>>(
+    `/QuanLyPhim/XoaPhim`,
+    {
+      params: { MaPhim: maPhim },
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).accessToken : ''}`
+      }
+    }
+  );
+  return response.data.content;
+};
+// loginAPI.ts
+export const loginAPI = async (data: loginDataRequest) => {
+  const res = await api.post<BaseAPIResponse<loginDataRequest>>(
+    "/QuanLyNguoiDung/DangNhap",
+    data
+  );
+
+  if (res.data.content) {
+    // luôn lưu 1 key duy nhất
+    localStorage.setItem("user", JSON.stringify(res.data.content)); 
+   }
+
+  return res.data.content;
 };

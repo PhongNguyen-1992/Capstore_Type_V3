@@ -41,3 +41,4 @@ export interface MovieSectionProps {
   movies: Movie[];
   icon?: ReactNode;
 }
+
