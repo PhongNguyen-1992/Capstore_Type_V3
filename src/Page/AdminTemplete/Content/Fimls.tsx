@@ -16,7 +16,7 @@ import {
   Alert,
   Modal,
 } from "antd";
-import { Edit, Trash2, Plus, Eye } from "lucide-react";
+import { Edit, Trash2, Plus, Eye, Aperture } from "lucide-react";
 import { UploadOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import {
   updateMovieAPI,
@@ -230,91 +230,105 @@ const FilmsManage: React.FC = () => {
  
 
   // UPDATE movie - FIXED
-  const handleUpdateMovie = async (values: any) => {
-    try {
-      if (!currentMovie) {
-        message.error("Không tìm thấy thông tin phim!");
-        return;
-      }
-
-      setLoading(true);
-      const formData = new FormData();
-
-      // Auto-determine status based on release date
-      const status = getMovieStatus(values.ngayKhoiChieu);
-
-      formData.append("maPhim", currentMovie.maPhim.toString());
-      formData.append("tenPhim", values.tenPhim);
-      formData.append("biDanh", values.tenPhim); // Use tenPhim as biDanh
-      formData.append("trailer", values.trailer);
-      formData.append("moTa", values.moTa);
-      formData.append("maNhom", "GP01");
-
-      // Format ngày dd/MM/yyyy
-      if (values.ngayKhoiChieu) {
-        formData.append("ngayKhoiChieu", values.ngayKhoiChieu.format("DD/MM/YYYY"));
-      }
-
-      // Use auto-determined status or manual values
-      formData.append("sapChieu", status.sapChieu ? "true" : "false");
-      formData.append("dangChieu", status.dangChieu ? "true" : "false");
-      formData.append("hot", values.hot ? "true" : "false");
-      formData.append("danhGia", values.danhGia.toString());
-
-      // Only append File if there's a new image uploaded
-      if (values.hinhAnh?.[0]?.originFileObj) {
-        formData.append("File", values.hinhAnh[0].originFileObj);
-      }
-
-      // Debug log FormData
-      console.log("📤 Updating movie with data:");
-      for (let [key, val] of formData.entries()) {
-        console.log(key, val);
-      }
-
-      // Call API update
-      await updateMovieAPI(formData);
-
-      message.success("Cập nhật phim thành công!");
-      setEditModal(false);
-      setCurrentMovie(null);
-      form.resetFields();
-      fetchMovies(pagination.current, pagination.pageSize);
-
-    } catch (err: any) {
-      console.error("❌ Update movie error:", err);
-      message.error(err.response?.data?.content || "Cập nhật phim thất bại");
-    } finally {
-      setLoading(false);
+ const handleUpdateMovie = async (values: any) => {
+  try {
+    if (!currentMovie) {
+      message.error("Không tìm thấy thông tin phim!");
+      return;
     }
-  };
-  
+
+    setLoading(true);
+    const formData = new FormData();
+
+    // Auto determine status
+    const status = getMovieStatus(values.ngayKhoiChieu);
+
+    // Payload cho backend
+    const moviePayload = {
+      maPhim: Number(currentMovie.maPhim), // ép về số
+      tenPhim: values.tenPhim,
+      biDanh: values.tenPhim, // có thể generate slug nếu cần
+      trailer: values.trailer,
+      moTa: values.moTa,
+      maNhom: "GP01",
+      ngayKhoiChieu: values.ngayKhoiChieu
+        ? values.ngayKhoiChieu.format("DD/MM/YYYY")
+        : "",
+      sapChieu: status.sapChieu,
+      dangChieu: status.dangChieu,
+      hot: values.hot || false,
+      danhGia: values.danhGia,
+    };
+
+    // Append tất cả field
+    Object.entries(moviePayload).forEach(([key, val]) => {
+      if (val !== undefined && val !== null) {
+        formData.append(key, String(val));
+      }
+    });
+
+    // Only append File nếu có upload ảnh mới
+    if (values.hinhAnh?.[0]?.originFileObj) {
+      formData.append("File", values.hinhAnh[0].originFileObj);
+    }
+
+    // Debug log
+    console.log("📤 Updating movie with data:");
+    for (let [key, val] of formData.entries()) {
+      console.log(key, val);
+    }
+
+    if (moviePayload.maPhim === 0) {
+      console.warn("⚠️ maPhim đang = 0, backend sẽ tạo phim mới thay vì update!");
+    }
+
+    // Call API update
+    await updateMovieAPI(formData);
+
+    message.success("Cập nhật phim thành công!");
+    setEditModal(false);
+    setCurrentMovie(null);
+    form.resetFields();
+    fetchMovies(pagination.current, pagination.pageSize);
+
+  } catch (err: any) {
+    console.error("❌ Update movie error:", err);
+    message.error(err.response?.data?.content || "Cập nhật phim thất bại");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // DELETE movie - FIXED
-  const handleDeleteMovie = (movie: Movie) => {
-    Modal.confirm({
-      title: `Bạn có chắc muốn xoá phim "${movie.tenPhim}"?`,
-      icon: <ExclamationCircleOutlined />,
-      content: 'Hành động này không thể hoàn tác!',
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
-      onOk: async () => {
-        try {
-          setLoading(true);
-          await deleteMovieAPI(movie.maPhim);
-          message.success("Xoá phim thành công!");
-          fetchMovies(pagination.current, pagination.pageSize);
-        } catch (err: any) {
-          console.error("❌ Delete movie error:", err);
-          message.error(err.response?.data?.content || "Xoá phim thất bại!");
-        } finally {
-          setLoading(false);
-        }
-      },
-    });
-  };
-
+ const handleDeleteMovie = (movie: Movie) => {
+  Modal.confirm({
+    title: `Bạn có chắc muốn xoá phim "${movie.tenPhim}"?`,
+    icon: <ExclamationCircleOutlined />,
+    content: "Hành động này không thể hoàn tác!",
+    okText: "Xóa",
+    okType: "danger",
+    cancelText: "Hủy",
+    async onOk() {
+      try {
+        setLoading(true);
+        await deleteMovieAPI(movie.maPhim);
+        message.success("✅ Xoá phim thành công!");
+        // refresh lại danh sách
+        fetchMovies(pagination.current, pagination.pageSize);
+      } catch (err: any) {
+        console.error("❌ Delete movie error:", err.response?.data || err);
+        message.error(
+          err.response?.data?.content ||
+          err.response?.data?.message ||
+          "Xoá phim thất bại!"
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
+};
   // Watch ngayKhoiChieu changes to auto-update status
   const handleDateChange = (date: any) => {
     if (date) {
@@ -706,13 +720,13 @@ const FilmsManage: React.FC = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       {selectedKey === "list" && (
         <>
-          <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-lg shadow-sm">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                🎬 Quản Lý Phim
+          <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-lg shadow-sm">           
+             <h1 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <Aperture className="w-6 h-6 text-blue-500" />
+                Quản Lý Phim
               </h1>
               <p className="text-gray-600">Danh sách tất cả các phim trong hệ thống</p>
-            </div>
+
             <Button
               type="primary"
               size="large"
@@ -723,7 +737,7 @@ const FilmsManage: React.FC = () => {
               }}
               className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-none rounded-lg px-6 h-12"
             >
-              ➕ Thêm Phim Mới
+               Thêm Phim Mới
             </Button>
           </div>
           

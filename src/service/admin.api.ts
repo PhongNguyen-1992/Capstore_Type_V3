@@ -94,17 +94,26 @@ export const updateMovieAPI = async (formData: FormData): Promise<Movie> => {
 /**
  * API: Xoá phim theo mã phim
  */
-export const deleteMovieAPI = async (maPhim: number): Promise<any> => {
-  const response = await api.delete<BaseAPIResponse<any>>(
-    `/QuanLyPhim/XoaPhim`,
-    {
-      params: { MaPhim: maPhim },
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).accessToken : ''}`
+export const deleteMovieAPI = async (maPhim: number | string): Promise<any> => {
+  try {
+    const user = localStorage.getItem("user");
+    const token = user ? JSON.parse(user).accessToken : "";
+
+    const response = await api.delete<BaseAPIResponse<any>>(
+      `/QuanLyPhim/XP`,
+      {
+        params: { MaPhim: maPhim.toString() }, // Ép string cho chắc
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    }
-  );
-  return response.data.content;
+    );
+
+    return response.data.content;
+  } catch (error: any) {
+    console.error("❌ deleteMovieAPI error:", error.response?.data || error);
+    throw error;
+  }
 };
 // loginAPI.ts
 export const loginAPI = async (data: loginDataRequest) => {
